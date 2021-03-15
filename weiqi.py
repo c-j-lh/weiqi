@@ -12,7 +12,7 @@ app.secret_key = 'your secret key'
 app.config['MYSQL_HOST'] = 'localhost'
 app.config['MYSQL_USER'] = 'root'
 app.config['MYSQL_PASSWORD'] = 'admin'
-app.config['MYSQL_DB'] = 'pythonlogin'
+app.config['MYSQL_DB'] = 'weiqi'
 
 # Intialize MySQL
 mysql = MySQL(app)
@@ -31,7 +31,7 @@ def login():
         
     # Check if account exists using MySQL
         cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-        cursor.execute('SELECT * FROM accounts WHERE username = %s AND password = %s', (username, password,))
+        cursor.execute('SELECT * FROM player WHERE name = %s AND dob = %s', (username, password,))
         # Fetch one record and return result
         account = cursor.fetchone()
         
@@ -39,8 +39,7 @@ def login():
         if account:
             # Create session data, we can access this data in other routes
             session['loggedin'] = True
-            session['id'] = account['id']
-            session['username'] = account['username']
+            session['username'] = account['name']
             # Redirect to home page
             return redirect(url_for('home'))
         else:
@@ -53,7 +52,7 @@ def login():
 def logout():
     # Remove session data, this will log the user out
    session.pop('loggedin', None)
-   session.pop('id', None)
+   #session.pop('id', None)
    session.pop('username', None)
    # Redirect to login page
    return redirect(url_for('login'))
@@ -71,7 +70,7 @@ def register():
         email = request.form['email']
         # Check if account exists using MySQL
         cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-        cursor.execute('SELECT * FROM accounts WHERE username = %s', (username,))
+        cursor.execute('SELECT * FROM player WHERE name = %s', (username,))
         account = cursor.fetchone()
         # If account exists show error and validation checks
         if account:
@@ -84,7 +83,7 @@ def register():
             msg = 'Please fill out the form!'
         else:
             # Account doesnt exists and the form data is valid, now insert new account into accounts table
-            cursor.execute('INSERT INTO accounts VALUES (NULL, %s, %s, %s)', (username, password, email,))
+            cursor.execute('INSERT INTO player VALUES (%s, NULL, %s, false, NULL, NULL, NULL)', (username, password, ))
             mysql.connection.commit()
             msg = 'You have successfully registered!'
     elif request.method == 'POST':
@@ -99,7 +98,7 @@ def home():
     # Check if user is loggedin
     if 'loggedin' in session:
         cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-        cursor.execute('SELECT * FROM accounts WHERE username <> %s', ('Le Heng2',))
+        cursor.execute('SELECT * FROM player WHERE name <> %s', ('Le Heng2',))
         #account = cursor.fetchone()
         print(*(i[0] for i in cursor.description))
         data = cursor.fetchall()
@@ -117,7 +116,7 @@ def profile():
     if 'loggedin' in session:
         # We need all the account info for the user so we can display it on the profile page
         cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-        cursor.execute('SELECT * FROM accounts WHERE id = %s', (session['id'],))
+        cursor.execute('SELECT * FROM player WHERE name = %s', (session['name'],))
         #account = cursor.fetchone()
         # Show the profile page with account info
         return render_template('profile.html', account=account,

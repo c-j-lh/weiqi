@@ -5,7 +5,7 @@ use weiqi;
 create table Player(
   name         varchar(100) not null,
   ranking      varchar(5),
-  DOB          datetime,
+  DOB          date,
   AIFlag	   bit not null,
   coder	   	   decimal(10,2),
   info         text,
