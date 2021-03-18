@@ -10,13 +10,13 @@ create table Country(
 
 create table Player(
   name         varchar(100) not null,
+  countryName  varchar(100) null,
   ranking      varchar(5),
   DOB          date,
   AIFlag	   bit not null,
   coder	   	   decimal(10,2),
   info         text,
   algoType     varchar(100),
-  countryName  varchar(100),
   foreign key(countryName) references Country(name),
   primary key (name)
 );
