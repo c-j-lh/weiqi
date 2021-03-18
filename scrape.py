@@ -1,8 +1,9 @@
 import requests
 import re
 from bs4 import BeautifulSoup
-from random import randrange
+from random import randrange, sample
 from datetime import timedelta, datetime
+from itertools import product
 
 def random_date(start, end):
     """
@@ -30,6 +31,10 @@ games = dict()
 
 countrycodes = {'xx':'null', 'kr':'"Korea"', 'ja':'"Japan"', 'cn':'"China"'}
 s = ''
+moves = []
+def number(chars):
+    return tuple(ord(char)-ord('a')+1 for char in chars)
+    
 for gameid, game in enumerate(soup.find_all('div', {"class": "player_block cblock_3"})):
     #if gameclass='player_block cblock_3')
     players2 = game.find_all('div', {"class": 'player_name'})
@@ -49,26 +54,29 @@ for gameid, game in enumerate(soup.find_all('div', {"class": "player_block cbloc
     result = game.find('div', {'class': 'game_result'}).string
     date = game.find('div', {'class': 'game_date'}).string
     games[gameid] = (result, date, names)
+    moves.append([])
     
-    r = requests.get(url, allow_redirects=True)
-    #open(f'data/{gameid:04d}.sgf', 'wb').write(r.content)
-    moves = []
-    def number(chars):
-        return tuple(ord(char)-ord('a')+1 for char in chars)
+    try:
+        content = open(f'data/{gameid:04d}.sgf', 'r').read()
+    except:
+        r = requests.get(url, allow_redirects=True)
+        open(f'data/{gameid:04d}.sgf', 'w').write(str(r.content))
+        content = r.content
         
-    for i in re.findall( r'.{1,2}\[[^]]*\]', str(r.content)):
+    for i in re.findall( r'.{1,2}\[[^]]*\]', str(content)):
         i = i.strip(';')
         index = i.find('[')
         tag = i[:index]
         data = i[index+1 : -1]
         #print(tag,data)
         if tag in 'BW':
-            moves.append(number(data))
+            moves[-1].append(number(data))
 
     #gameid = 0      
-    '''for moveno, (movex, movey) in enumerate(moves):
+    '''for moveno, (movex, movey) in enumerate(moves[-1]):
         s += f'INSERT INTO move VALUES ({gameid},{moveno}, {movex},{movey});\n'
-    s += '\n''''
+    s += '\n'
+    '''
     
 for name, (country, ranking) in players.items():
     dob = random_date(start, end).date()
@@ -78,9 +86,28 @@ print()
 for gameid, (result, date, names) in games.items():
     print(f'INSERT INTO game VALUES ({gameid}, "{result}", "{date}", NULL, "{names[0]}", "{names[1]}");')
 print()
-    
+
 print(s)
 
+players = list(players.keys())
+gamesC = sample(range(len(games)), 10)
+
+cid = 0
+for gameid in gamesC: 
+    if len(moves[gameid])<2:
+        continue
+    movesC = sample(range(len(moves[gameid])), 2)
+    playersC = sample(players, 2)
+    for moveid, player in product(movesC, playersC):
+        print(f'insert into comment values ({cid}, "Good move", 0, {player!r}, {gameid}, {moveid});')
+        #print(gameid, moveid, player, "gg")
+        cid += 1
+
+'''cidC = cid
+for cid in sample(range(cidC), 3):
+    for moveid in range(10):
+        a'''
+    
 
 '''url = 'http://gokifu.com/f/39i9-gokifu-20210225-Shin_Jinseo-Ke_Jie.sgf'
 r = requests.get(url, allow_redirects=True)
