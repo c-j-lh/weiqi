@@ -13,8 +13,7 @@ for i in re.findall( r'.{1,2}\[[^]]*\]', content):
     if tag in 'BW':
         moves.append(number(data))
 
-f'INSERT INTO game VALUES (0,"B+7.5", "2020-10-05", NULL, "Le Heng2", "Le Heng3");'  
-gameid = 0     
+#gameid = 0     
 for moveno, (movex, movey) in enumerate(moves):
     print(f'INSERT INTO move VALUES ({gameid},{moveno}, {movex},{movey});')
     #print(moves)

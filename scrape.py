@@ -53,7 +53,7 @@ for gameid, game in enumerate(soup.find_all('div', {"class": "player_block cbloc
     #break
     result = game.find('div', {'class': 'game_result'}).string
     date = game.find('div', {'class': 'game_date'}).string
-    games[gameid] = (result, date, names)
+    games[gameid] = [result, date, names, None]
     moves.append([])
     
     try:
@@ -63,6 +63,7 @@ for gameid, game in enumerate(soup.find_all('div', {"class": "player_block cbloc
         open(f'data/{gameid:04d}.sgf', 'w').write(str(r.content))
         content = r.content
         
+    event = None   
     for i in re.findall( r'.{1,2}\[[^]]*\]', str(content)):
         i = i.strip(';')
         index = i.find('[')
@@ -71,12 +72,27 @@ for gameid, game in enumerate(soup.find_all('div', {"class": "player_block cbloc
         #print(tag,data)
         if tag in 'BW':
             moves[-1].append(number(data))
+        elif tag=='EV':
+            print(data)
+            games[gameid][3] = data
+    
+    #gameid = 0
+    if moves[-1]:    
+        s += 'INSERT INTO move VALUES\n'
+        s += ',\n'.join(f'\t({gameid},{moveno}, {movex},{movey})'
+                        for moveno, (movex, movey) in enumerate(moves[-1])) + ';\n'
+    #for moveno, (movex, movey) in enumerate(moves[-1]):
+    #    s += f'\t({gameid},{moveno}, {movex},{movey});\n'
+    #s += '\n'
 
-    #gameid = 0      
-    '''for moveno, (movex, movey) in enumerate(moves[-1]):
-        s += f'INSERT INTO move VALUES ({gameid},{moveno}, {movex},{movey});\n'
-    s += '\n'
-    '''
+print(open('weiqi.sql', 'r').read() + '\n\n')
+print('''use weiqi;
+
+delete from country;
+INSERT INTO country VALUES ("China","China.jpg");
+INSERT INTO country VALUES ("Japan","China.jpg");
+INSERT INTO country VALUES ("Korea","China.jpg");
+select * from country;''')
     
 for name, (country, ranking) in players.items():
     dob = random_date(start, end).date()
@@ -87,7 +103,7 @@ for gameid, (result, date, names) in games.items():
     print(f'INSERT INTO game VALUES ({gameid}, "{result}", "{date}", NULL, "{names[0]}", "{names[1]}");')
 print()
 
-print(s)
+#print(s)
 
 players = list(players.keys())
 gamesC = sample(range(len(games)), 10)
