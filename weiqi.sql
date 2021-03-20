@@ -33,14 +33,6 @@ create table Event(
     foreign key(compName) references Competition(compName)
 );
 
-create table Hosts(
-	compName varchar(100),
-    compIter int,
-    countryName varchar(100),
-	foreign key(compName) references Competition(compName),
-	foreign key(countryName) references Country(name)
-);
-
 create table Game(
 	id	int,
 	result	varchar(10),
@@ -52,7 +44,14 @@ create table Game(
 	primary key(id),
 	foreign key(playerNameBlack) references Player(name),
 	foreign key(playerNameWhite) references Player(name),
-	foreign key(compName, compIter) references Competition(compName, compIter)
+	foreign key(compName, compIter) references Event(compName, compIter)
+);
+
+create table Hosts(
+	compName varchar(100),
+    countryName varchar(100),
+	foreign key(compName) references Competition(compName),
+	foreign key(countryName) references Country(name)
 );
 
 create table Move(

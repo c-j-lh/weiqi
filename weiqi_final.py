@@ -1,3 +1,21 @@
+22th  Nogshim Cup
+22th  Nogshim Cup
+22th  Nogshim Cup
+25th  LG Cup
+25th  LG Cup
+\xe7\xac\xac13\xe5\xb1\x8a\xe6\x98\xa5\xe5\x85\xb0\xe6\x9d\xaf\xe4\xb8\x96\xe7\x95\x8c\xe8\x81\x8c\xe4\xb8\x9a\xe9\x94\xa6\xe6\xa0\x87\xe8\xb5\x9b\xe5\x8d\x8a\xe5\x86\xb3\xe8\xb5\x9b
+13rd  Chunlan Cup
+13rd  Chunlan Cup
+13rd  Chunlan Cup
+13rd  Chunlan Cup
+13rd  Chunlan Cup
+13rd  Chunlan Cup
+
+
+
+
+
+
 drop database if exists weiqi;
 create database weiqi;
 use weiqi;
@@ -33,6 +51,14 @@ create table Event(
     foreign key(compName) references Competition(compName)
 );
 
+create table Hosts(
+	compName varchar(100),
+    compIter int,
+    countryName varchar(100),
+	foreign key(compName) references Competition(compName),
+	foreign key(countryName) references Country(name)
+);
+
 create table Game(
 	id	int,
 	result	varchar(10),
@@ -44,14 +70,7 @@ create table Game(
 	primary key(id),
 	foreign key(playerNameBlack) references Player(name),
 	foreign key(playerNameWhite) references Player(name),
-	foreign key(compName, compIter) references Event(compName, compIter)
-);
-
-create table Hosts(
-	compName varchar(100),
-    countryName varchar(100),
-	foreign key(compName) references Competition(compName),
-	foreign key(countryName) references Country(name)
+	foreign key(compName, compIter) references Competition(compName, compIter)
 );
 
 create table Move(
@@ -94,55 +113,49 @@ create table Tags(
 
 
 
+use weiqi;
 
+delete from country;
 INSERT INTO country VALUES ("China","China.jpg");
 INSERT INTO country VALUES ("Japan","China.jpg");
 INSERT INTO country VALUES ("Korea","China.jpg");
+select * from country;
+INSERT INTO player VALUES ("Shin Jinseo", null, "9p", "1999-01-31", false, null, null, null);
+INSERT INTO player VALUES ("Ke Jie", "China", "9p", "1963-07-30", false, null, null, null);
+INSERT INTO player VALUES ("Ichiriki Ryo", "Japan", "9p", "1972-01-10", false, null, null, null);
+INSERT INTO player VALUES ("Yang Dingxin", "China", "9p", "1942-09-15", false, null, null, null);
+INSERT INTO player VALUES ("Iyama Yuuta", "Japan", "9p", "1992-11-06", false, null, null, null);
+INSERT INTO player VALUES ("Shin Minjun", null, "9p", "1989-12-10", false, null, null, null);
+INSERT INTO player VALUES ("Tang Weixing", "China", "9p", "1988-11-22", false, null, null, null);
+INSERT INTO player VALUES ("Lian Xiao", "China", "9p", "1960-05-18", false, null, null, null);
+INSERT INTO player VALUES ("Fan Tingyu", "China", "9p", "1982-06-28", false, null, null, null);
+INSERT INTO player VALUES ("Byun Sangil", null, "9p", "1945-04-21", false, null, null, null);
+INSERT INTO player VALUES ("Park Yeonghun", "Korea", "9p", "1986-01-25", false, null, null, null);
+INSERT INTO player VALUES ("Xie Ke", null, "8p", "1969-03-03", false, null, null, null);
+INSERT INTO player VALUES ("Zhao Chenyu", null, "8p", "1957-12-09", false, null, null, null);
+INSERT INTO player VALUES ("Xu Jiayang", null, "8p", "1978-12-09", false, null, null, null);
+INSERT INTO player VALUES ("Tao Xinran", "China", "8p", "1951-05-04", false, null, null, null);
 
-insert into competition values ("World Amateur Champion Special Competition");
-insert into competition values ("Chinese Agon Cup");
-insert into event values ("Chinese Agon Cup", 8);
-insert into event values ("Chinese Agon Cup", 9);
-insert into event values ("Chinese Agon Cup", 10);
-insert into event values ("World Amateur Champion Special Competition", 0);
-insert into hosts values ("Chinese Agon Cup", "China");
-
-INSERT INTO player VALUES ("Shin Jinseo", null, "9p", "1959-07-14", false, null, null, null);
-INSERT INTO player VALUES ("Ke Jie", "China", "9p", "1995-01-01", false, null, null, null);
-INSERT INTO player VALUES ("Ichiriki Ryo", "Japan", "9p", "1949-03-27", false, null, null, null);
-INSERT INTO player VALUES ("Yang Dingxin", "China", "9p", "1973-03-31", false, null, null, null);
-INSERT INTO player VALUES ("Iyama Yuuta", "Japan", "9p", "1972-04-05", false, null, null, null);
-INSERT INTO player VALUES ("Shin Minjun", null, "9p", "1972-11-23", false, null, null, null);
-INSERT INTO player VALUES ("Tang Weixing", "China", "9p", "1967-03-08", false, null, null, null);
-INSERT INTO player VALUES ("Lian Xiao", "China", "9p", "1997-05-15", false, null, null, null);
-INSERT INTO player VALUES ("Fan Tingyu", "China", "9p", "1996-02-12", false, null, null, null);
-INSERT INTO player VALUES ("Byun Sangil", null, "9p", "1969-11-09", false, null, null, null);
-INSERT INTO player VALUES ("Park Yeonghun", "Korea", "9p", "1949-10-26", false, null, null, null);
-INSERT INTO player VALUES ("Xie Ke", null, "8p", "1940-11-19", false, null, null, null);
-INSERT INTO player VALUES ("Zhao Chenyu", null, "8p", "1941-10-03", false, null, null, null);
-INSERT INTO player VALUES ("Xu Jiayang", null, "8p", "1984-04-25", false, null, null, null);
-INSERT INTO player VALUES ("Tao Xinran", "China", "8p", "1974-07-21", false, null, null, null);
-
-INSERT INTO game VALUES (0, "B+R", "2021-02-25", "Chinese Agon Cup", 10, "Shin Jinseo", "Ke Jie");
-INSERT INTO game VALUES (1, "B+R", "2021-02-24", "Chinese Agon Cup", 9, "Shin Jinseo", "Ichiriki Ryo");
-INSERT INTO game VALUES (2, "B+R", "2021-02-23", "Chinese Agon Cup", 9, "Shin Jinseo", "Yang Dingxin");
-INSERT INTO game VALUES (3, "W+R", "2021-02-22", "Chinese Agon Cup", 9, "Iyama Yuuta", "Shin Jinseo");
-INSERT INTO game VALUES (4, "W+R", "2021-02-03", "Chinese Agon Cup", 9, "Ke Jie", "Shin Minjun");
-INSERT INTO game VALUES (5, "W+R", "2021-02-01", "Chinese Agon Cup", 10, "Shin Minjun", "Ke Jie");
-INSERT INTO game VALUES (6, "W+R", "2021-01-20", "Chinese Agon Cup", 8, "Ke Jie", "Tang Weixing");
-INSERT INTO game VALUES (7, "W+R", "2021-01-20", "Chinese Agon Cup", 8, "Ke Jie", "Tang Weixing");
-INSERT INTO game VALUES (8, "B+R", "2021-01-20", "Chinese Agon Cup", 10, "Shin Jinseo", "Lian Xiao");
-INSERT INTO game VALUES (9, "W+R", "2021-01-18", "Chinese Agon Cup", 8, "Fan Tingyu", "Shin Jinseo");
-INSERT INTO game VALUES (10, "B+R", "2021-01-18", "Chinese Agon Cup", 8, "Lian Xiao", "Byun Sangil");
-INSERT INTO game VALUES (11, "W+R", "2021-01-18", "Chinese Agon Cup", 10, "Fan Tingyu", "Shin Jinseo");
-INSERT INTO game VALUES (12, "W+R", "2021-01-18", "Chinese Agon Cup", 8, "Park Yeonghun", "Tang Weixing");
-INSERT INTO game VALUES (13, "B+3.5", "2021-01-12", "Chinese Agon Cup", 10, "Xie Ke", "Ichiriki Ryo");
-INSERT INTO game VALUES (14, "B+3.5", "2021-01-12", "Chinese Agon Cup", 8, "Xie Ke", "Ichiriki Ryo");
-INSERT INTO game VALUES (15, "B+R", "2021-01-10", "World Amateur Champion Special Competition", 0, "Shin Jinseo", "Zhao Chenyu");
-INSERT INTO game VALUES (16, "B+R", "2021-01-10", "World Amateur Champion Special Competition", 0, "Shin Jinseo", "Zhao Chenyu");
-INSERT INTO game VALUES (17, "B+R", "2021-01-10", "World Amateur Champion Special Competition", 0, "Shin Jinseo", "Zhao Chenyu");
-INSERT INTO game VALUES (18, "W+R", "2021-01-08", "World Amateur Champion Special Competition", 0, "Yang Dingxin", "Xu Jiayang");
-INSERT INTO game VALUES (19, "W+0.5", "2021-01-06", "World Amateur Champion Special Competition", 0, "Tao Xinran", "Yang Dingxin");
+INSERT INTO game VALUES (0, "B+R", "2021-02-25", NULL, NULL, "Shin Jinseo", "Ke Jie");
+INSERT INTO game VALUES (1, "B+R", "2021-02-24", NULL, NULL, "Shin Jinseo", "Ichiriki Ryo");
+INSERT INTO game VALUES (2, "B+R", "2021-02-23", NULL, NULL, "Shin Jinseo", "Yang Dingxin");
+INSERT INTO game VALUES (3, "W+R", "2021-02-22", NULL, NULL, "Iyama Yuuta", "Shin Jinseo");
+INSERT INTO game VALUES (4, "W+R", "2021-02-03", NULL, NULL, "Ke Jie", "Shin Minjun");
+INSERT INTO game VALUES (5, "W+R", "2021-02-01", NULL, NULL, "Shin Minjun", "Ke Jie");
+INSERT INTO game VALUES (6, "W+R", "2021-01-20", NULL, NULL, "Ke Jie", "Tang Weixing");
+INSERT INTO game VALUES (7, "W+R", "2021-01-20", NULL, NULL, "Ke Jie", "Tang Weixing");
+INSERT INTO game VALUES (8, "B+R", "2021-01-20", NULL, NULL, "Shin Jinseo", "Lian Xiao");
+INSERT INTO game VALUES (9, "W+R", "2021-01-18", NULL, NULL, "Fan Tingyu", "Shin Jinseo");
+INSERT INTO game VALUES (10, "B+R", "2021-01-18", NULL, NULL, "Lian Xiao", "Byun Sangil");
+INSERT INTO game VALUES (11, "W+R", "2021-01-18", NULL, NULL, "Fan Tingyu", "Shin Jinseo");
+INSERT INTO game VALUES (12, "W+R", "2021-01-18", NULL, NULL, "Park Yeonghun", "Tang Weixing");
+INSERT INTO game VALUES (13, "B+3.5", "2021-01-12", NULL, NULL, "Xie Ke", "Ichiriki Ryo");
+INSERT INTO game VALUES (14, "B+3.5", "2021-01-12", NULL, NULL, "Xie Ke", "Ichiriki Ryo");
+INSERT INTO game VALUES (15, "B+R", "2021-01-10", NULL, NULL, "Shin Jinseo", "Zhao Chenyu");
+INSERT INTO game VALUES (16, "B+R", "2021-01-10", NULL, NULL, "Shin Jinseo", "Zhao Chenyu");
+INSERT INTO game VALUES (17, "B+R", "2021-01-10", NULL, NULL, "Shin Jinseo", "Zhao Chenyu");
+INSERT INTO game VALUES (18, "W+R", "2021-01-08", NULL, NULL, "Yang Dingxin", "Xu Jiayang");
+INSERT INTO game VALUES (19, "W+0.5", "2021-01-06", NULL, NULL, "Tao Xinran", "Yang Dingxin");
 
 INSERT INTO move VALUES
 	(1,0, 17,4),
@@ -4055,92 +4068,88 @@ INSERT INTO move VALUES
 	(19,279, 17,2),
 	(19,280, 10,10);
 
-insert into comment values (0, "Good move", 0, 'Tang Weixing', 9, 36);
-insert into comment values (1, "Good move", 0, 'Fan Tingyu', 9, 36);
-insert into comment values (2, "Good move", 0, 'Tang Weixing', 9, 157);
-insert into comment values (3, "Good move", 0, 'Fan Tingyu', 9, 157);
-insert into comment values (4, "Good move", 0, 'Byun Sangil', 18, 237);
-insert into comment values (5, "Good move", 0, 'Ichiriki Ryo', 18, 237);
-insert into comment values (6, "Good move", 0, 'Byun Sangil', 18, 39);
-insert into comment values (7, "Good move", 0, 'Ichiriki Ryo', 18, 39);
-insert into comment values (8, "Good move", 0, 'Ke Jie', 7, 39);
-insert into comment values (9, "Good move", 0, 'Byun Sangil', 7, 39);
-insert into comment values (10, "Good move", 0, 'Ke Jie', 7, 153);
-insert into comment values (11, "Good move", 0, 'Byun Sangil', 7, 153);
-insert into comment values (12, "Good move", 0, 'Zhao Chenyu', 6, 221);
-insert into comment values (13, "Good move", 0, 'Iyama Yuuta', 6, 221);
-insert into comment values (14, "Good move", 0, 'Zhao Chenyu', 6, 188);
-insert into comment values (15, "Good move", 0, 'Iyama Yuuta', 6, 188);
-insert into comment values (16, "Good move", 0, 'Ke Jie', 16, 184);
-insert into comment values (17, "Good move", 0, 'Zhao Chenyu', 16, 184);
-insert into comment values (18, "Good move", 0, 'Ke Jie', 16, 90);
-insert into comment values (19, "Good move", 0, 'Zhao Chenyu', 16, 90);
-insert into comment values (20, "Good move", 0, 'Park Yeonghun', 12, 118);
-insert into comment values (21, "Good move", 0, 'Byun Sangil', 12, 118);
-insert into comment values (22, "Good move", 0, 'Park Yeonghun', 12, 19);
-insert into comment values (23, "Good move", 0, 'Byun Sangil', 12, 19);
-insert into comment values (24, "Good move", 0, 'Byun Sangil', 8, 187);
-insert into comment values (25, "Good move", 0, 'Tang Weixing', 8, 187);
-insert into comment values (26, "Good move", 0, 'Byun Sangil', 8, 11);
-insert into comment values (27, "Good move", 0, 'Tang Weixing', 8, 11);
-insert into comment values (28, "Good move", 0, 'Ichiriki Ryo', 10, 70);
-insert into comment values (29, "Good move", 0, 'Iyama Yuuta', 10, 70);
-insert into comment values (30, "Good move", 0, 'Ichiriki Ryo', 10, 186);
-insert into comment values (31, "Good move", 0, 'Iyama Yuuta', 10, 186);
-insert into comment values (32, "Good move", 0, 'Shin Minjun', 2, 70);
-insert into comment values (33, "Good move", 0, 'Iyama Yuuta', 2, 70);
-insert into comment values (34, "Good move", 0, 'Shin Minjun', 2, 52);
-insert into comment values (35, "Good move", 0, 'Iyama Yuuta', 2, 52);
+insert into comment values (0, "Good move", 0, 'Yang Dingxin', 13, 211);
+insert into comment values (1, "Good move", 0, 'Xu Jiayang', 13, 211);
+insert into comment values (2, "Good move", 0, 'Yang Dingxin', 13, 202);
+insert into comment values (3, "Good move", 0, 'Xu Jiayang', 13, 202);
+insert into comment values (4, "Good move", 0, 'Tao Xinran', 4, 46);
+insert into comment values (5, "Good move", 0, 'Xu Jiayang', 4, 46);
+insert into comment values (6, "Good move", 0, 'Tao Xinran', 4, 78);
+insert into comment values (7, "Good move", 0, 'Xu Jiayang', 4, 78);
+insert into comment values (8, "Good move", 0, 'Ichiriki Ryo', 6, 95);
+insert into comment values (9, "Good move", 0, 'Lian Xiao', 6, 95);
+insert into comment values (10, "Good move", 0, 'Ichiriki Ryo', 6, 15);
+insert into comment values (11, "Good move", 0, 'Lian Xiao', 6, 15);
+insert into comment values (12, "Good move", 0, 'Park Yeonghun', 2, 19);
+insert into comment values (13, "Good move", 0, 'Ke Jie', 2, 19);
+insert into comment values (14, "Good move", 0, 'Park Yeonghun', 2, 126);
+insert into comment values (15, "Good move", 0, 'Ke Jie', 2, 126);
+insert into comment values (16, "Good move", 0, 'Fan Tingyu', 10, 80);
+insert into comment values (17, "Good move", 0, 'Shin Minjun', 10, 80);
+insert into comment values (18, "Good move", 0, 'Fan Tingyu', 10, 14);
+insert into comment values (19, "Good move", 0, 'Shin Minjun', 10, 14);
+insert into comment values (20, "Good move", 0, 'Park Yeonghun', 9, 39);
+insert into comment values (21, "Good move", 0, 'Ichiriki Ryo', 9, 39);
+insert into comment values (22, "Good move", 0, 'Park Yeonghun', 9, 13);
+insert into comment values (23, "Good move", 0, 'Ichiriki Ryo', 9, 13);
+insert into comment values (24, "Good move", 0, 'Yang Dingxin', 14, 245);
+insert into comment values (25, "Good move", 0, 'Shin Minjun', 14, 245);
+insert into comment values (26, "Good move", 0, 'Yang Dingxin', 14, 297);
+insert into comment values (27, "Good move", 0, 'Shin Minjun', 14, 297);
+insert into comment values (28, "Good move", 0, 'Yang Dingxin', 3, 187);
+insert into comment values (29, "Good move", 0, 'Xu Jiayang', 3, 187);
+insert into comment values (30, "Good move", 0, 'Yang Dingxin', 3, 190);
+insert into comment values (31, "Good move", 0, 'Xu Jiayang', 3, 190);
 
-insert into Votes values ('Park Yeonghun', 16, True);
-insert into Votes values ('Shin Jinseo', 16, True);
-insert into Votes values ('Ke Jie', 16, False);
-insert into Votes values ('Xu Jiayang', 16, True);
-insert into Votes values ('Tang Weixing', 16, True);
-insert into Votes values ('Byun Sangil', 2, False);
-insert into Votes values ('Xu Jiayang', 2, True);
-insert into Votes values ('Yang Dingxin', 2, False);
+insert into Votes values ('Xu Jiayang', 7, True);
+insert into Votes values ('Shin Jinseo', 7, True);
+insert into Votes values ('Tang Weixing', 7, True);
+insert into Votes values ('Ichiriki Ryo', 7, False);
+insert into Votes values ('Park Yeonghun', 7, True);
+insert into Votes values ('Ichiriki Ryo', 0, True);
+insert into Votes values ('Iyama Yuuta', 0, True);
+insert into Votes values ('Xie Ke', 0, True);
+insert into Votes values ('Zhao Chenyu', 0, True);
+insert into Votes values ('Shin Minjun', 0, True);
+insert into Votes values ('Iyama Yuuta', 15, True);
+insert into Votes values ('Byun Sangil', 15, False);
+insert into Votes values ('Ichiriki Ryo', 15, False);
+insert into Votes values ('Lian Xiao', 15, True);
+insert into Votes values ('Shin Minjun', 15, True);
+insert into Votes values ('Iyama Yuuta', 2, True);
+insert into Votes values ('Tao Xinran', 2, False);
+insert into Votes values ('Fan Tingyu', 2, True);
+insert into Votes values ('Xu Jiayang', 2, False);
 insert into Votes values ('Ichiriki Ryo', 2, True);
-insert into Votes values ('Shin Minjun', 2, False);
-insert into Votes values ('Tang Weixing', 35, True);
-insert into Votes values ('Shin Jinseo', 35, False);
-insert into Votes values ('Tao Xinran', 35, False);
-insert into Votes values ('Byun Sangil', 35, True);
-insert into Votes values ('Xie Ke', 35, True);
-insert into Votes values ('Park Yeonghun', 11, False);
-insert into Votes values ('Fan Tingyu', 11, False);
-insert into Votes values ('Zhao Chenyu', 11, True);
-insert into Votes values ('Byun Sangil', 11, False);
-insert into Votes values ('Lian Xiao', 11, True);
-insert into Votes values ('Xie Ke', 7, True);
-insert into Votes values ('Fan Tingyu', 7, False);
-insert into Votes values ('Ke Jie', 7, True);
-insert into Votes values ('Ichiriki Ryo', 7, True);
-insert into Votes values ('Iyama Yuuta', 7, True);
+insert into Votes values ('Xu Jiayang', 27, False);
+insert into Votes values ('Fan Tingyu', 27, False);
+insert into Votes values ('Xie Ke', 27, False);
+insert into Votes values ('Shin Minjun', 27, True);
+insert into Votes values ('Ke Jie', 27, True);
 
-insert into Tags values ('Park Yeonghun', 13);
-insert into Tags values ('Tang Weixing', 13);
-insert into Tags values ('Shin Minjun', 13);
-insert into Tags values ('Tao Xinran', 13);
-insert into Tags values ('Xie Ke', 13);
-insert into Tags values ('Byun Sangil', 25);
-insert into Tags values ('Fan Tingyu', 25);
-insert into Tags values ('Ichiriki Ryo', 25);
-insert into Tags values ('Xie Ke', 25);
-insert into Tags values ('Ke Jie', 25);
-insert into Tags values ('Park Yeonghun', 14);
-insert into Tags values ('Yang Dingxin', 14);
-insert into Tags values ('Fan Tingyu', 14);
-insert into Tags values ('Shin Minjun', 14);
-insert into Tags values ('Xu Jiayang', 14);
-insert into Tags values ('Byun Sangil', 7);
-insert into Tags values ('Xie Ke', 7);
-insert into Tags values ('Tao Xinran', 7);
-insert into Tags values ('Xu Jiayang', 7);
-insert into Tags values ('Park Yeonghun', 7);
-insert into Tags values ('Park Yeonghun', 12);
-insert into Tags values ('Zhao Chenyu', 12);
-insert into Tags values ('Iyama Yuuta', 12);
-insert into Tags values ('Yang Dingxin', 12);
-insert into Tags values ('Xie Ke', 12);
+insert into Tags values ('Ke Jie', 12, True);
+insert into Tags values ('Tang Weixing', 12, True);
+insert into Tags values ('Iyama Yuuta', 12, True);
+insert into Tags values ('Yang Dingxin', 12, True);
+insert into Tags values ('Fan Tingyu', 12, True);
+insert into Tags values ('Xu Jiayang', 16, True);
+insert into Tags values ('Byun Sangil', 16, True);
+insert into Tags values ('Xie Ke', 16, True);
+insert into Tags values ('Tang Weixing', 16, True);
+insert into Tags values ('Park Yeonghun', 16, True);
+insert into Tags values ('Park Yeonghun', 3, False);
+insert into Tags values ('Ke Jie', 3, False);
+insert into Tags values ('Lian Xiao', 3, False);
+insert into Tags values ('Shin Minjun', 3, True);
+insert into Tags values ('Zhao Chenyu', 3, True);
+insert into Tags values ('Byun Sangil', 27, True);
+insert into Tags values ('Fan Tingyu', 27, True);
+insert into Tags values ('Ke Jie', 27, False);
+insert into Tags values ('Lian Xiao', 27, True);
+insert into Tags values ('Zhao Chenyu', 27, True);
+insert into Tags values ('Ichiriki Ryo', 10, False);
+insert into Tags values ('Byun Sangil', 10, True);
+insert into Tags values ('Shin Jinseo', 10, False);
+insert into Tags values ('Yang Dingxin', 10, True);
+insert into Tags values ('Xu Jiayang', 10, True);
 

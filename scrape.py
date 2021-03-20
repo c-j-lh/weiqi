@@ -1,7 +1,7 @@
 import requests
 import re
 from bs4 import BeautifulSoup
-from random import randrange, sample
+from random import randrange, sample, choice
 from datetime import timedelta, datetime
 from itertools import product
 
@@ -73,7 +73,7 @@ for gameid, game in enumerate(soup.find_all('div', {"class": "player_block cbloc
         if tag in 'BW':
             moves[-1].append(number(data))
         elif tag=='EV':
-            print(data)
+            #print(data)
             games[gameid][3] = data
     
     #gameid = 0
@@ -86,24 +86,34 @@ for gameid, game in enumerate(soup.find_all('div', {"class": "player_block cbloc
     #s += '\n'
 
 print(open('weiqi.sql', 'r').read() + '\n\n')
-print('''use weiqi;
-
-delete from country;
+print('''
 INSERT INTO country VALUES ("China","China.jpg");
 INSERT INTO country VALUES ("Japan","China.jpg");
 INSERT INTO country VALUES ("Korea","China.jpg");
-select * from country;''')
+
+insert into competition values ("World Amateur Champion Special Competition");
+insert into competition values ("Chinese Agon Cup");
+insert into event values ("Chinese Agon Cup", 8);
+insert into event values ("Chinese Agon Cup", 9);
+insert into event values ("Chinese Agon Cup", 10);
+insert into event values ("World Amateur Champion Special Competition", 0);
+insert into hosts values ("Chinese Agon Cup", "China");
+''')
+    
     
 for name, (country, ranking) in players.items():
     dob = random_date(start, end).date()
     print(f'INSERT INTO player VALUES ("{name}", {country}, "{ranking}", "{dob}", false, null, null, null);')
 print()
     
-for gameid, (result, date, names) in games.items():
-    print(f'INSERT INTO game VALUES ({gameid}, "{result}", "{date}", NULL, "{names[0]}", "{names[1]}");')
+ll = list(games.items())
+for gameid, (result, date, names,_ignore) in ll[:-5]:
+    print(f'INSERT INTO game VALUES ({gameid}, "{result}", "{date}", "Chinese Agon Cup", {choice([8,9,10])}, "{names[0]}", "{names[1]}");')
+for gameid, (result, date, names,_ignore) in ll[-5:]:
+    print(f'INSERT INTO game VALUES ({gameid}, "{result}", "{date}", "World Amateur Champion Special Competition", 0, "{names[0]}", "{names[1]}");')
 print()
 
-#print(s)
+print(s)
 
 players = list(players.keys())
 gamesC = sample(range(len(games)), 10)
@@ -118,12 +128,19 @@ for gameid in gamesC:
         print(f'insert into comment values ({cid}, "Good move", 0, {player!r}, {gameid}, {moveid});')
         #print(gameid, moveid, player, "gg")
         cid += 1
+print()
 
-'''cidC = cid
-for cid in sample(range(cidC), 3):
-    for moveid in range(10):
-        a'''
-    
+cidC = cid
+for cid in sample(range(cidC), 5):
+    for player in sample(players, 5):
+        print(f'insert into Votes values ({player!r}, {cid}, {choice([False]*2+[True]*5)});')
+print()        
+
+
+for cid in sample(range(cidC), 5):
+    for player in sample(players, 5):
+        print(f'insert into Tags values ({player!r}, {cid});')   
+print()
 
 '''url = 'http://gokifu.com/f/39i9-gokifu-20210225-Shin_Jinseo-Ke_Jie.sgf'
 r = requests.get(url, allow_redirects=True)
