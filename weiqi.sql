@@ -21,17 +21,38 @@ create table Player(
   primary key (name)
 );
 
+create table Competition(
+	compName varchar(100),
+    primary key(compName)
+);
+
+create table Event(
+	compName varchar(100),
+    compIter int,
+    primary key(compName, compIter),
+    foreign key(compName) references Competition(compName)
+);
+
+create table Hosts(
+	compName varchar(100),
+    compIter int,
+    countryName varchar(100),
+	foreign key(compName) references Competition(compName),
+	foreign key(countryName) references Country(name)
+);
+
 create table Game(
-		id	int,
-        result	varchar(10),
-        startDate date,
-        countryName varchar(100),
-        playerNameBlack varchar(100) not null,
-        playerNameWhite varchar(100) not null,
-        primary key(id),
-        foreign key(playerNameBlack) references Player(name),
-        foreign key(playerNameWhite) references Player(name),
-        foreign key(countryName) references Country(name)
+	id	int,
+	result	varchar(10),
+	startDate date,
+	compName varchar(100),
+	compIter int,
+	playerNameBlack varchar(100) not null,
+	playerNameWhite varchar(100) not null,
+	primary key(id),
+	foreign key(playerNameBlack) references Player(name),
+	foreign key(playerNameWhite) references Player(name),
+	foreign key(compName, compIter) references Competition(compName, compIter)
 );
 
 create table Move(
