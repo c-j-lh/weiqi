@@ -57,7 +57,7 @@ for gameid, game in enumerate(soup.find_all('div', {"class": "player_block cbloc
     moves.append([])
     
     try:
-        content = open(f'data/{gameid:04d}.sgf', 'r').read()
+        content = open(f'data/{gameid:04d}.sgf', 'r', encoding='utf-8').read()
     except:
         r = requests.get(url, allow_redirects=True)
         open(f'data/{gameid:04d}.sgf', 'w').write(str(r.content))
@@ -72,8 +72,11 @@ for gameid, game in enumerate(soup.find_all('div', {"class": "player_block cbloc
         #print(tag,data)
         if tag in 'BW':
             moves[-1].append(number(data))
-        elif tag=='EV':
-            print(data)
+        elif tag=='EV' and data:
+            print(gameid, 'daa:', data, '"')
+            search = re.search('(\d+)(th|rd|st|nd)|(Year *)?(19|20)?\d{2}', data)
+            iter = int(search.group(4) if search.group(4) else search.group(1)) if search else None
+            print(iter)
             games[gameid][3] = data
     
     #gameid = 0
