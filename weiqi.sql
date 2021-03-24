@@ -14,7 +14,7 @@ create table Player(
   ranking      varchar(5),
   DOB          date,
   AIFlag	   bit not null,
-  coder	   	   decimal(10,2),
+  version	   decimal(10,2),
   info         text,
   algoType     varchar(100),
   foreign key(countryName) references Country(name),
@@ -78,7 +78,7 @@ create table Votes(
 	playerName varchar(100),
 	commentID int,
     downUp boolean,  -- False for down, True for up
-    primary key(playerNAme, commentID),
+    primary key(playerName, commentID),
     foreign key(playerName) references Player(name),
     foreign key(commentID) references Comment(ID)
 );

@@ -55,3 +55,15 @@ insert into comment values (0, "Good move", -2, "Le Heng2", 0, 2);
 
 insert into Votes values ("Le Heng1", 0, False), ("Le Heng3", 0, False);
 insert into Tags values ("Le Heng1", 0);
+
+/*
+insert into votes value ("Ke Jie", 0,True);
+select * from comment;
+update votes 
+set commentID=2, downUp=False
+where playerName="Ke Jie" and commentID=0;
+select * from comment;
+delete from votes
+where playerName="Ke Jie" and commentID=2;
+select * from comment;
+*/

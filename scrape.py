@@ -62,6 +62,7 @@ for gameid, game in enumerate(soup.find_all('div', {"class": "player_block cbloc
         r = requests.get(url, allow_redirects=True)
         open(f'data/{gameid:04d}.sgf', 'w').write(str(r.content))
         content = r.content
+        raise Exception
         
     event = None   
     for i in re.findall( r'.{1,2}\[[^]]*\]', str(content)):

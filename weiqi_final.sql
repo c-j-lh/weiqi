@@ -14,7 +14,7 @@ create table Player(
   ranking      varchar(5),
   DOB          date,
   AIFlag	   bit not null,
-  coder	   	   decimal(10,2),
+  version	   	   decimal(10,2),
   info         text,
   algoType     varchar(100),
   foreign key(countryName) references Country(name),
@@ -107,11 +107,11 @@ insert into event values ("Chinese Agon Cup", 10);
 insert into event values ("World Amateur Champion Special Competition", 0);
 insert into hosts values ("Chinese Agon Cup", "China");
 
-INSERT INTO player VALUES ("Shin Jinseo", null, "9p", "1959-07-14", false, null, null, null);
+INSERT INTO player VALUES ("Shin Jinseo", null, "9p", "1959-07-14", true, 1.0, "cool", "Deep Learning");
 INSERT INTO player VALUES ("Ke Jie", "China", "9p", "1995-01-01", false, null, null, null);
 INSERT INTO player VALUES ("Ichiriki Ryo", "Japan", "9p", "1949-03-27", false, null, null, null);
 INSERT INTO player VALUES ("Yang Dingxin", "China", "9p", "1973-03-31", false, null, null, null);
-INSERT INTO player VALUES ("Iyama Yuuta", "Japan", "9p", "1972-04-05", false, null, null, null);
+INSERT INTO player VALUES ("Iyama Yuuta", "Japan", "9p", "1972-04-05", true, 1.1, "cool 1.1", "Deep Learning + MCTS");
 INSERT INTO player VALUES ("Shin Minjun", null, "9p", "1972-11-23", false, null, null, null);
 INSERT INTO player VALUES ("Tang Weixing", "China", "9p", "1967-03-08", false, null, null, null);
 INSERT INTO player VALUES ("Lian Xiao", "China", "9p", "1997-05-15", false, null, null, null);
@@ -4143,4 +4143,37 @@ insert into Tags values ('Zhao Chenyu', 12);
 insert into Tags values ('Iyama Yuuta', 12);
 insert into Tags values ('Yang Dingxin', 12);
 insert into Tags values ('Xie Ke', 12);
+
+update comment
+set voteCount = (select count(*) from votes where commentID=id);
+select * from comment;
+
+create trigger addVote
+after insert on votes
+for each row
+update comment
+set voteCount = voteCount + if(new.downUp, 1, -1)
+where new.commentID=id;
+
+create trigger subVote
+after delete on votes
+for each row
+update comment
+set voteCount = voteCount - if(old.downUp, 1, -1)
+where old.commentID=id;
+
+DELIMITER //
+create trigger changeVote
+after update on votes
+for each row
+BEGIN
+	update comment
+	set voteCount = voteCount - if(old.downUp, 1, -1)
+	where old.commentID=id;
+    
+	update comment
+	set voteCount = voteCount + if(new.downUp, 1, -1)
+	where new.commentID=id;
+END;//
+delimiter ;
 
