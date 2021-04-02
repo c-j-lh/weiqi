@@ -33,7 +33,7 @@ countrycodes = {'xx':'null', 'kr':'"Korea"', 'ja':'"Japan"', 'cn':'"China"'}
 s = ''
 moves = []
 def number(chars):
-    return tuple(ord(char)-ord('a')+1 for char in chars)
+    return tuple(reversed([ord(char)-ord('a')+1 for char in chars]))
     
 for gameid, game in enumerate(soup.find_all('div', {"class": "player_block cblock_3"})):
     #if gameclass='player_block cblock_3')
@@ -60,9 +60,8 @@ for gameid, game in enumerate(soup.find_all('div', {"class": "player_block cbloc
         content = open(f'data/{gameid:04d}.sgf', 'r').read()
     except:
         r = requests.get(url, allow_redirects=True)
-        open(f'data/{gameid:04d}.sgf', 'w').write(str(r.content))
-        content = r.content
-        raise Exception
+        content = r.content.decode("utf-8")
+        open(f'data/{gameid:04d}.sgf', 'w').write(str(content))
         
     event = None   
     for i in re.findall( r'.{1,2}\[[^]]*\]', str(content)):
@@ -88,9 +87,9 @@ for gameid, game in enumerate(soup.find_all('div', {"class": "player_block cbloc
 
 print(open('weiqi.sql', 'r').read() + '\n\n')
 print('''
-INSERT INTO country VALUES ("China","China.jpg");
-INSERT INTO country VALUES ("Japan","China.jpg");
-INSERT INTO country VALUES ("Korea","China.jpg");
+INSERT INTO country VALUES ("China","images/cn.png");
+INSERT INTO country VALUES ("Japan","images/jp.png");
+INSERT INTO country VALUES ("Korea","images/kr.png");
 
 insert into competition values ("World Amateur Champion Special Competition");
 insert into competition values ("Chinese Agon Cup");
@@ -143,6 +142,38 @@ for cid in sample(range(cidC), 5):
         print(f'insert into Tags values ({player!r}, {cid});')   
 print()
 
+print('''update comment
+set voteCount = (select count(*) from votes where commentID=id);
+-- select * from comment;
+
+create trigger addVote
+after insert on votes
+for each row
+update comment
+set voteCount = voteCount + if(new.downUp, 1, -1)
+where new.commentID=id;
+
+create trigger subVote
+after delete on votes
+for each row
+update comment
+set voteCount = voteCount - if(old.downUp, 1, -1)
+where old.commentID=id;
+
+DELIMITER //
+create trigger changeVote
+after update on votes
+for each row
+BEGIN
+	update comment
+	set voteCount = voteCount - if(old.downUp, 1, -1)
+	where old.commentID=id;
+    
+	update comment
+	set voteCount = voteCount + if(new.downUp, 1, -1)
+	where new.commentID=id;
+END;//
+delimiter ;''')
 '''url = 'http://gokifu.com/f/39i9-gokifu-20210225-Shin_Jinseo-Ke_Jie.sgf'
 r = requests.get(url, allow_redirects=True)
 

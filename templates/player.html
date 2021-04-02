@@ -1,0 +1,47 @@
+{% extends 'layout.html' %}
+
+{% block title %}{% endblock %}
+
+{% block content %}
+<!--<h2>Home Page</h2>-->
+<h2>{{ player }}!</h2>
+<img src="images/cn.png" alt="China">
+
+<br>Age: {{ age.age }}
+<br>Rank: {{ age.ranking }}
+<br>
+
+Games played
+<table>
+<tr>
+	<th>Black</th>
+	<th>White</th>
+</tr>
+{% for item in games %}
+<tr>
+    <td>{{item.playerNameBlack}}</td>
+    <td>{{item.playerNameWhite}}</td>
+</tr>
+{% endfor %}
+</table>
+
+
+
+{% endblock %}
+<!--Games
+<table>
+<tr>
+	<th>Name</th>
+	<th>DOB</th>
+</tr>
+{% for item in data %}
+<tr>
+    <td>{{item['name']}}</td>
+    <td>{{item['DOB']}}</td>
+</tr>
+
+{% endfor %}
+</table>
+    <td>{{item['playerNameBlack']}}</td>
+    <td>{{item['playerNameWhite']}}</td>
+	-->

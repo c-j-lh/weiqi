@@ -110,9 +110,9 @@ def home():
         cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
         cursor.execute('SELECT * FROM player WHERE name <> %s', ('Le Heng2',))
         #account = cursor.fetchone()
-        print(*(i[0] for i in cursor.description))
+        #print(*(i[0] for i in cursor.description))
         data = cursor.fetchall()
-        print('cursor:', data)
+        #print('cursor:', data)
         # User is loggedin show them the home page
         return render_template('home.html', name=session['name'], data=data)
        
@@ -127,12 +127,92 @@ def profile():
         # We need all the account info for the user so we can display it on the profile page
         cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
         cursor.execute('SELECT * FROM player WHERE name = %s', (session['name'],))
-        #account = cursor.fetchone()
+        account = cursor.fetchone()
         # Show the profile page with account info
-        return render_template('profile.html', account=account,
-        data=cur.fetchall())
+        return render_template('profile.html',
+        account=account,
+        data=cursor.fetchall())
     # User is not loggedin redirect to login page
     return redirect(url_for('login'))
+
+@app.route('/pythonlogin/player/<player>')
+def player(player):
+    # Check if user is loggedin
+    print(f'player is {player}')
+    if 'loggedin' in session:
+        # We need all the account info for the user so we can display it on the profile page
+        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+        cursor.execute('SELECT * FROM game WHERE playerNameBlack=%s or playerNameWhite=%s', (player, player))
+        
+        age = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+        age.execute("SELECT TIMESTAMPDIFF(YEAR,dob,CURDATE()) AS age, ranking from player where name=%s", (player,));
+        dd = age.fetchone()
+        #print(dd)
+        
+        data = cursor.fetchall()
+        print('games:', data)
+        #account = cursor.fetchone()
+        # Show the profile page with account info
+        return render_template('player.html',
+        age=dd,
+        games=data,
+        player=player)
+    # User is not loggedin redirect to login page
+    return redirect(url_for('login'))
+    #return f'Hello, {s}!' 
+
+
+
+
+@app.route('/pythonlogin/country/<country>')
+def country(country):
+    # Check if user is loggedin
+    print(f'player is {player}')
+    if 'loggedin' in session:
+        # We need all the account info for the user so we can display it on the profile page
+        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+        cursor.execute('SELECT name, dob FROM player WHERE countryname=%s', (country,))
+        players = cursor.fetchall()
+        print('players,', players)
+        
+        games = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+        games.execute("SELECT playerNameBlack, playerNameWhite from game where playerNameBlack in (SELECT name FROM player WHERE countryname=%s) or playerNameWhite in (SELECT name FROM player WHERE countryname=%s);", (country, country));
+        games = games.fetchall()
+        #print(dd)
+        
+        #print('games:', data)
+        #account = cursor.fetchone()
+        # Show the profile page with account info
+        return render_template('country.html',
+        games=games,
+        players=players)
+    # User is not loggedin redirect to login page
+    return redirect(url_for('login'))
+    #return f'Hello, {s}!' 
+
+
+
+@app.route('/pythonlogin/event/<compname>/<compiter>')
+def event(compname, compiter):
+    # Check if user is loggedin
+    print(f'{compname} {compiter}')
+    if 'loggedin' in session:
+        # We need all the account info for the user so we can display it on the profile page
+        info = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+        info.execute('SELECT * FROM event WHERE compname=%s and compiter=%s', (compname, compiter))
+        info = info.fetchone()
+        print('info,', info)
+        
+        games = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+        games.execute("SELECT * FROM game WHERE compname=%s and compiter=%s", (compname, compiter));
+        games = games.fetchall()
+        return render_template('event.html',
+        games=games,
+        info=info)
+    # User is not loggedin redirect to login page
+    return redirect(url_for('login'))
+    #return f'Hello, {s}!' 
+    
     
 if __name__=='__main__':
     print('starting :)')

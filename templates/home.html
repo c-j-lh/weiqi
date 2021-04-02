@@ -14,8 +14,8 @@ Players
 </tr>
 {% for item in data %}
 <tr>
-    <td>{{item['name']}}</td>
-    <td>{{item['DOB']}}</td>
+	<td><a href="{{ url_for('player', player=item.name) }}" class="active">{{item.name}}</a></td>
+    <td>{{item.DOB}}</td>
 </tr>
 {% endfor %}
 </table>

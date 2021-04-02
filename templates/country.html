@@ -1,0 +1,43 @@
+{% extends 'layout.html' %}
+
+{% block title %} {{ country }} {% endblock %}
+
+{% block content %}
+<img src="images/cn.png" alt="China">
+
+Players
+<table>
+<tr>
+	<th>Name</th>
+	<th>DOB</th>
+</tr>
+{% for item in players %}
+<tr>
+	<td><a href="{{ url_for('player', player=item.name) }}" class="active">{{item.name}}</a></td>
+    <td>{{item.DOB}}</td>
+</tr>
+{% endfor %}
+</table>
+
+Games
+<table>
+<tr>
+	<th>Black</th>
+	<th>White</th>
+</tr>
+{% for item in games %}
+<tr>
+    <td>{{item.playerNameBlack}}</td>
+    <td>{{item.playerNameWhite}}</td>
+</tr>
+{% endfor %}
+</table>
+
+
+
+{% endblock %}
+<!--Games
+<br>Age: {{ age.age }}
+<br>Rank: {{ age.ranking }}
+<br>
+	-->

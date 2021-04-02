@@ -1,0 +1,41 @@
+{% extends 'layout.html' %}
+
+{% block title %}  {% endblock %}
+
+{% block content %}
+<img src="images/cn.png" alt="China">
+
+
+<h2>{{info.compName}}, Iteration{{info.compIter}}</h2>
+Games
+<table>
+<tr>
+	<th>Black</th>
+	<th>White</th>
+</tr>
+{% for item in games %}
+<tr>
+    <td>{{item.playerNameBlack}}</td>
+    <td>{{item.playerNameWhite}}</td>
+</tr>
+{% endfor %}
+</table>
+
+
+
+{% endblock %}
+<!--
+Games
+<table>
+<tr>
+	<th>Black</th>
+	<th>DOB</th>
+</tr>
+{% for item in players %}
+<tr>
+	<td><a href="{{ url_for('player', player=item.name) }}" class="active">{{item.name}}</a></td>
+    <td>{{item.DOB}}</td>
+</tr>
+{% endfor %}
+</table>
+-->
