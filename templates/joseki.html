@@ -1,0 +1,51 @@
+{% extends 'layout.html' %}
+
+{% block title %}  {% endblock %}
+
+{% block content %}
+<img src="images/cn.png" alt="China">
+
+
+<h1>Joseki query</h2>
+Search your joseki!
+<form action="{{ url_for('register') }}" method="post" autocomplete="off">
+	<label for="username">
+		<i class="fas fa-user"></i>
+	</label>
+	<input type="text" name="coords" placeholder="9 19 3 8" id="coords" required>
+	<!--<div class="msg">{{ msg }}</div>-->
+	<input type="submit" value="Register">
+</form>
+
+<h2>Games</h3>
+<table>
+<tr>
+	<th>Black</th>
+	<th>White</th>
+</tr>
+{% for item in games %}
+<tr>
+    <td>{{item.playerNameBlack}}</td>
+    <td>{{item.playerNameWhite}}</td>
+</tr>
+{% endfor %}
+</table>
+
+
+
+{% endblock %}
+<!--
+Games
+<table>
+<tr>
+	<th>Black</th>
+	<th>DOB</th>
+</tr>
+{% for item in players %}
+<tr>
+	<td><a href="{{ url_for('player', player=item.name) }}" class="active">{{item.name}}</a></td>
+    <td>{{item.DOB}}</td>
+</tr>
+{% endfor %}
+</table>
+-->

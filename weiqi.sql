@@ -46,7 +46,6 @@ create table Game(
 	foreign key(playerNameWhite) references Player(name),
 	foreign key(compName, compIter) references Event(compName, compIter)
 );
-
 create table Hosts(
 	compName varchar(100),
     countryName varchar(100),

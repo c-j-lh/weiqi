@@ -108,11 +108,9 @@ def home():
     # Check if user is loggedin
     if 'loggedin' in session:
         cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-        cursor.execute('SELECT * FROM player WHERE name <> %s', ('Le Heng2',))
-        #account = cursor.fetchone()
-        #print(*(i[0] for i in cursor.description))
+        cursor.execute('SELECT P.*, C.flag FROM player P, country C WHERE P.name<>%s and P.countryName=C.name', ('Le Heng2',))
         data = cursor.fetchall()
-        #print('cursor:', data)
+        print('cursor:', data)
         # User is loggedin show them the home page
         return render_template('home.html', name=session['name'], data=data)
        
@@ -142,10 +140,11 @@ def player(player):
     if 'loggedin' in session:
         # We need all the account info for the user so we can display it on the profile page
         cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-        cursor.execute('SELECT * FROM game WHERE playerNameBlack=%s or playerNameWhite=%s', (player, player))
+        cursor.execute('SELECT G.*, P1.countryName as blackFlag, P2.countryName as whiteFlag FROM game G, player P1, player P2 WHERE (G.playerNameBlack=%s or G.playerNameWhite=%s) and  G.playerNameBlack=P1.name and G.playerNameWhite=P2.name', (player, player))
+        #games.execute("SELECT G.*, P1.countryName as blackFlag, P2.countryName as whiteFlag FROM game G, player P1, player P2 WHERE compname=%s and compiter=%s and G.playerNameBlack=P1.name and G.playerNameWhite=P2.name", (compname, compiter));
         
         age = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-        age.execute("SELECT TIMESTAMPDIFF(YEAR,dob,CURDATE()) AS age, ranking from player where name=%s", (player,));
+        age.execute("SELECT TIMESTAMPDIFF(YEAR,dob,CURDATE()) AS age, player.* from player where name=%s", (player,));
         dd = age.fetchone()
         #print(dd)
         
@@ -169,14 +168,24 @@ def country(country):
     # Check if user is loggedin
     print(f'player is {player}')
     if 'loggedin' in session:
+        info = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+        info.execute('SELECT * FROM country WHERE name=%s', (country,))
+        info = info.fetchone()
+        
         # We need all the account info for the user so we can display it on the profile page
         cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-        cursor.execute('SELECT name, dob FROM player WHERE countryname=%s', (country,))
+        cursor.execute('SELECT * FROM player WHERE countryname=%s', (country,))
         players = cursor.fetchall()
         print('players,', players)
         
         games = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-        games.execute("SELECT playerNameBlack, playerNameWhite from game where playerNameBlack in (SELECT name FROM player WHERE countryname=%s) or playerNameWhite in (SELECT name FROM player WHERE countryname=%s);", (country, country));
+        games.execute("""SELECT G.playerNameBlack, G.playerNameWhite, P1.countryName as blackFlag, P2.countryName as whiteFlag
+FROM game G , player P1, player P2
+where ( playerNameBlack in (SELECT name FROM player WHERE countryname=%s) 
+	or playerNameWhite in (SELECT name FROM player WHERE countryname=%s) )
+	and G.playerNameBlack=P1.name and G.playerNameWhite=P2.name
+;""", (country, country));
+        #FROM game G, player P1, player P2 WHERE compname=%s and compiter=%s and G.playerNameBlack=P1.name and G.playerNameWhite=P2.name
         games = games.fetchall()
         #print(dd)
         
@@ -185,7 +194,8 @@ def country(country):
         # Show the profile page with account info
         return render_template('country.html',
         games=games,
-        players=players)
+        players=players,
+        info=info)
     # User is not loggedin redirect to login page
     return redirect(url_for('login'))
     #return f'Hello, {s}!' 
@@ -204,16 +214,98 @@ def event(compname, compiter):
         print('info,', info)
         
         games = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-        games.execute("SELECT * FROM game WHERE compname=%s and compiter=%s", (compname, compiter));
+        games.execute("SELECT G.*, P1.countryName as blackFlag, P2.countryName as whiteFlag FROM game G, player P1, player P2 WHERE compname=%s and compiter=%s and G.playerNameBlack=P1.name and G.playerNameWhite=P2.name", (compname, compiter));
         games = games.fetchall()
+        print('GAMES', games)
+        print('images/'+{'China':'cn', 'Japan':'jp', 'Korea':'kr', None:''}['China']+'.png')
         return render_template('event.html',
         games=games,
         info=info)
     # User is not loggedin redirect to login page
     return redirect(url_for('login'))
     #return f'Hello, {s}!' 
+
+
+@app.route('/pythonlogin/game/<gameid>')
+def game(gameid):
+    # Check if user is loggedin
+    if 'loggedin' in session:
+        # We need all the account info for the user so we can display it on the profile page
+        info = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+        info.execute('SELECT G.*, P1.countryName as blackFlag, P2.countryName as whiteFlag FROM game G, player P1, player P2 WHERE id=%s and G.playerNameBlack=P1.name and G.playerNameWhite=P2.name', (gameid,))
+        
+        info = info.fetchone()
+        print('info,', info)
+        
+        moves = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+        moves.execute("SELECT * FROM move WHERE gameid=%s", (gameid,));
+        moves = moves.fetchall()
+        
+        comments = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+        comments.execute("SELECT * FROM comment WHERE gameidabout=%s", (gameid,));
+        comments = comments.fetchall()
+        print('comments', comments)
+        
+        return render_template('game.html',
+        moves=moves,
+        comments=comments,
+        info=info)
+    # User is not loggedin redirect to login page
+    return redirect(url_for('login'))
+    #return f'Hello, {s}!'
+   
+fstr = '''select m1.gameid
+from move m1, move m2 -- , move m3
+where m1.gameid=m2.gameid and m1.moveno < m2.moveno -- and m2.gameid=m3.gameid
+	and (
+		(m1.positionx=3 and m1.positiony=4 and m2.positionx=5 and m2.positiony=3)
+        or (m1.moveno+1=m2.moveno and m1.positionx=17 and m1.positiony=4 and m2.positionx=15 and m2.positiony=3)
+        or (m1.moveno+1=m2.moveno and m1.positionx=3 and m1.positiony=16 and m2.positionx=5 and m2.positiony=17)
+        or (m1.moveno+1=m2.moveno and m1.positionx=17 and m1.positiony=16 and m2.positionx=15 and m2.positiony=17)
+		
+        or (m1.moveno+1=m2.moveno and m1.positionx=4 and m1.positiony=3 and m2.positionx=3 and m2.positiony=5)
+        or (m1.moveno+1=m2.moveno and m1.positionx=4 and m1.positiony=17 and m2.positionx=3 and m2.positiony=15)
+        or (m1.moveno+1=m2.moveno and m1.positionx=16 and m1.positiony=3 and m2.positionx=17 and m2.positiony=5)
+        or (m1.moveno+1=m2.moveno and m1.positionx=16 and m1.positiony=17 and m2.positionx=17 and m2.positiony=15)
+	);'''
+
+def imageFor(country):
+    print(f'country is {country}')
+    games = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    games.execute('SELECT * FROM country WHERE name = %s', (country,))
+    games = games.fetchone()
+    print(games.flag)
+    return url_for('static', filename='cn.png')
     
-    
+@app.route('/pythonlogin/joseki/')   
+def joseki():
+    # Output message if something goes wrong...
+    msg = ''
+    # Check if "name", "password" and "ranking" POST requests exist (user submitted form)
+    games = []
+    if request.method == 'POST' and 'name' in request.form and 'password' in request.form and 'ranking' in request.form:
+        # Create variables for easy access
+        coords = request.form['coords']
+        
+        # If account exists show error and validation checks
+        try:
+            coords = list(map(int, coords.split(' ')))
+            print(coords)
+            assert len(coords)==4  # %2 == 0
+            
+            games = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+            games.execute('SELECT * FROM games WHERE id = %s', (1,))
+            games = games.fetchall()
+            msg = 'result'
+        except:
+            msg = 'Please enter pairs of coordinates'
+    elif request.method == 'POST':
+        # Form is empty... (no POST data)
+        msg = 'Please fill out the form!'
+    # Show registration form with message (if any)
+    return render_template('joseki.html', msg=msg, games=games)
+
+
 if __name__=='__main__':
     print('starting :)')
     app.debug = True

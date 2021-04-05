@@ -14,7 +14,7 @@ Players
 </tr>
 {% for item in data %}
 <tr>
-	<td><a href="{{ url_for('player', player=item.name) }}" class="active">{{item.name}}</a></td>
+	<td><img src="{{url_for('static', filename=item.flag)}}" width="20px" alt="China"><a href="{{ url_for('player', player=item.name) }}" class="active">{{item.name}}</a></td>
     <td>{{item.DOB}}</td>
 </tr>
 {% endfor %}

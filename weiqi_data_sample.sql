@@ -46,6 +46,7 @@ INSERT INTO game VALUES (17, "B+R", "2021-01-10", NULL, "Shin Jinseo", "Zhao Che
 INSERT INTO game VALUES (18, "W+R", "2021-01-08", NULL, "Yang Dingxin", "Xu Jiayang");
 INSERT INTO game VALUES (19, "W+0.5", "2021-01-06", NULL, "Tao Xinran", "Yang Dingxin");
 
+update comment set voteCount=-1 where id=2;
 delete from Move;
 INSERT INTO move VALUES (0,0, 3,4);
 INSERT INTO move VALUES (0,1, 17,4);
@@ -55,6 +56,13 @@ insert into comment values (0, "Good move", -2, "Le Heng2", 0, 2);
 
 insert into Votes values ("Le Heng1", 0, False), ("Le Heng3", 0, False);
 insert into Tags values ("Le Heng1", 0);
+
+SELECT G.playerNameBlack, G.playerNameWhite, P1.countryName as blackFlag, P2.countryName as whiteFlag
+FROM game G , player P1, player P2
+where ( playerNameBlack in (SELECT name FROM player WHERE countryname="China") 
+	or playerNameWhite in (SELECT name FROM player WHERE countryname="China") )
+	and G.playerNameBlack=P1.name and G.playerNameWhite=P2.name
+;
 
 /*
 insert into votes value ("Ke Jie", 0,True);
@@ -70,11 +78,11 @@ select * from comment;
 
 select m1.gameid
 from move m1, move m2 -- , move m3
-where m1.gameid=m2.gameid and m1.moveno < m2.moveno -- and m2.gameid=m3.gameid
+where m1.gameid=m2.gameid and (m2.moveno-m1.moveno)%2=1 -- and m2.gameid=m3.gameid
 	and (
 		(m1.positionx=3 and m1.positiony=4 and m2.positionx=5 and m2.positiony=3)
         or (m1.moveno+1=m2.moveno and m1.positionx=17 and m1.positiony=4 and m2.positionx=15 and m2.positiony=3)
-        or (m1.moveno+1=m2.moveno and m1.positionx=3 and m1.positiosny=16 and m2.positionx=5 and m2.positiony=17)
+        or (m1.moveno+1=m2.moveno and m1.positionx=3 and m1.positiony=16 and m2.positionx=5 and m2.positiony=17)
         or (m1.moveno+1=m2.moveno and m1.positionx=17 and m1.positiony=16 and m2.positionx=15 and m2.positiony=17)
 		
         or (m1.moveno+1=m2.moveno and m1.positionx=4 and m1.positiony=3 and m2.positionx=3 and m2.positiony=5)
@@ -82,6 +90,24 @@ where m1.gameid=m2.gameid and m1.moveno < m2.moveno -- and m2.gameid=m3.gameid
         or (m1.moveno+1=m2.moveno and m1.positionx=16 and m1.positiony=3 and m2.positionx=17 and m2.positiony=5)
         or (m1.moveno+1=m2.moveno and m1.positionx=16 and m1.positiony=17 and m2.positionx=17 and m2.positiony=15)
 	);
+select (2--3)%2;    
+select * from move
+where gameid=13;
     
-    select * from move
-    where gameid=13;
+select * from player limit 1;
+use weiqi;
+SELECT game.*, C1.flag as blackFlag, C2.flag as whiteFlag FROM game, player P, country C1, Country C2 WHERE compname='Chinese Agon Cup' and compiter=8;
+
+SELECT G.*, C1.flag as blackFlag-- , C2.flag as whiteFlag 
+FROM game G, player P1, player P2, country C1-- , Country C2
+WHERE compname='Chinese Agon Cup' and compiter=8 
+	and (G.playerNameBlack=P1.name ) -- and P1.countryName=C1.name) 
+    and (G.playerNameWhite=P2.name ) -- and P2.countryName=C2.name)
+;
+
+SELECT G.*, P1.name, P1.countryName, C1.name-- , C1.flag as blackFlag, C2.flag as whiteFlag 
+FROM game G, player P1, player P2, country C1-- , Country C2
+WHERE compname='Chinese Agon Cup' and compiter=8 
+	and (G.playerNameBlack=P1.name ) -- and P1.countryName=C1.name) 
+    and (G.playerNameWhite=P2.name ) -- and P2.countryName=C2.name)
+;

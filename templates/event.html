@@ -3,20 +3,30 @@
 {% block title %}  {% endblock %}
 
 {% block content %}
-<img src="images/cn.png" alt="China">
 
 
-<h2>{{info.compName}}, Iteration{{info.compIter}}</h2>
+<h2>{{info.compName}}, Iteration {{info.compIter}}</h2>
 Games
 <table>
 <tr>
+	<th>Game ID</th>
 	<th>Black</th>
 	<th>White</th>
 </tr>
 {% for item in games %}
 <tr>
-    <td>{{item.playerNameBlack}}</td>
-    <td>{{item.playerNameWhite}}</td>
+    <td><a href="{{ url_for('game', gameid=item.id) }}" class="active">{{item.id}}</a></td>
+    <td>
+		<img src="{{url_for('static', filename='images/'+{'China':'cn', 'Japan':'jp', 'Korea':'kr', None:''}[item.blackFlag])+'.png'}}" width="20px" alt="{{item.blackFlag}}">
+		
+		<a href="{{ url_for('player', player=item.playerNameBlack) }}" class="active">{{item.playerNameBlack}}</a>
+	</td>
+	
+    <td>
+		<img src="{{url_for('static', filename='images/'+{'China':'cn', 'Japan':'jp', 'Korea':'kr', None:''}[item.whiteFlag])+'.png'}}" width="20px" alt="{{item.whiteFlag}}">
+		
+		<a href="{{ url_for('player', player=item.playerNameWhite) }}" class="active">{{item.playerNameWhite}}</a>
+	</td>
 </tr>
 {% endfor %}
 </table>
@@ -25,17 +35,6 @@ Games
 
 {% endblock %}
 <!--
-Games
-<table>
-<tr>
-	<th>Black</th>
-	<th>DOB</th>
-</tr>
-{% for item in players %}
-<tr>
-	<td><a href="{{ url_for('player', player=item.name) }}" class="active">{{item.name}}</a></td>
-    <td>{{item.DOB}}</td>
-</tr>
-{% endfor %}
-</table>
+
+<img src="{{url_for('static', filename='cn.png')}}" alt="China">
 -->

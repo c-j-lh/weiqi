@@ -1,0 +1,57 @@
+{% extends 'layout.html' %}
+
+{% block title %}  {% endblock %}
+
+{% block content %}
+<h1>Game #{{info.id}}</h2>
+Black: 
+	<img src="{{url_for('static', filename='images/'+{'China':'cn', 'Japan':'jp', 'Korea':'kr', None:''}[info.blackFlag])+'.png'}}" width="20px" alt="{{info.blackFlag}}">
+	{{ info.playerNameBlack }}<br>
+
+White: 
+	<img src="{{url_for('static', filename='images/'+{'China':'cn', 'Japan':'jp', 'Korea':'kr', None:''}[info.whiteFlag])+'.png'}}" width="20px" alt="{{info.whiteFlag}}">
+	{{ info.playerNameWhite }}<br>
+
+Result: {{ info.result }}
+
+<h2>Moves</h3>
+<table>
+<tr>
+	<th>Move Number</th>
+	<th>Player</th>
+	<th>Move</th>
+</tr>
+{% for item in moves %}
+<tr>
+	<td>{{item.moveNo}}</td>
+    <td>{{['Black', 'White'][item.moveNo % 2]}}</td>
+    <td>{{item.positionX}}, {{item.positionY}}</td>
+</tr>
+{% endfor %}
+</table>
+
+<h2>Comments</h3>
+<table>
+<tr>
+	<th></th>
+	<th>Move Number</th>
+	<th>Player</th>
+	<th>Move</th>
+</tr>
+{% for item in comments %}
+<tr>
+    <td>
+		<i class="fa fa-angle-{{'up' if item.voteCount>=0 else 'down'}}"></i>  
+		{{-item.voteCount if item.voteCount<0 else item.voteCount}}
+	</td>
+	<td>{{item.moveNoAbout}}</td>
+    <td>{{item.playerNameTyped}}: </td>
+    <td>{{item.text_}}</td>
+</tr>
+{% endfor %}
+</table>
+
+{% endblock %}
+<!--
+
+-->

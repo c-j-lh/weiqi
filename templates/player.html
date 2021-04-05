@@ -5,7 +5,8 @@
 {% block content %}
 <!--<h2>Home Page</h2>-->
 <h2>{{ player }}!</h2>
-<img src="images/cn.png" alt="China">
+
+<img src="{{url_for('static', filename='images/'+{'China':'cn', 'Japan':'jp', 'Korea':'kr', None:''}[age.countryName])+'.png'}}" width="20px" alt="{{age.countryName}}">
 
 <br>Age: {{ age.age }}
 <br>Rank: {{ age.ranking }}
@@ -19,8 +20,18 @@ Games played
 </tr>
 {% for item in games %}
 <tr>
-    <td>{{item.playerNameBlack}}</td>
-    <td>{{item.playerNameWhite}}</td>
+    <td><a href="{{ url_for('game', gameid=item.id) }}" class="active">{{item.id}}</a></td>
+    <td>
+		<img src="{{url_for('static', filename='images/'+{'China':'cn', 'Japan':'jp', 'Korea':'kr', None:''}[item.blackFlag])+'.png'}}" width="20px" alt="{{item.blackFlag}}">
+		
+		<a href="{{ url_for('player', player=item.playerNameBlack) }}" class="active">{{item.playerNameBlack}}</a>
+	</td>
+	
+    <td>
+		<img src="{{url_for('static', filename='images/'+{'China':'cn', 'Japan':'jp', 'Korea':'kr', None:''}[item.whiteFlag])+'.png'}}" width="20px" alt="{{item.whiteFlag}}">
+		
+		<a href="{{ url_for('player', player=item.playerNameWhite) }}" class="active">{{item.playerNameWhite}}</a>
+	</td>
 </tr>
 {% endfor %}
 </table>
