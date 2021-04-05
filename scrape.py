@@ -1,10 +1,12 @@
 import requests
 import re
 from bs4 import BeautifulSoup
-from random import randrange, sample, choice
+from random import randrange, sample, choice, seed
 from datetime import timedelta, datetime
 from itertools import product
 
+
+# https://stackoverflow.com/questions/553303/generate-a-random-date-between-two-other-dates
 def random_date(start, end):
     """
     This function will return a random datetime between two datetime 
@@ -14,13 +16,8 @@ def random_date(start, end):
     int_delta = (delta.days * 24 * 60 * 60) + delta.seconds
     random_second = randrange(int_delta)
     return start + timedelta(seconds=random_second)
-# https://stackoverflow.com/questions/553303/generate-a-random-date-between-two-other-dates
 start = datetime.strptime('1/1/1940', '%m/%d/%Y')
 end = datetime.strptime('1/1/2000', '%m/%d/%Y')
-#print(random_date(d1, d2))
-
-#vgm_url = 'https://www.vgmusic.com/music/console/nintendo/nes/'
-#html_text = requests.get(vgm_url).text
 
 url_pattern = '[^"]*.sgf' # '"[^"]*.sgf"'
 
@@ -79,7 +76,7 @@ for gameid, game in enumerate(soup.find_all('div', {"class": "player_block cbloc
     #gameid = 0
     if moves[-1]:    
         s += 'INSERT INTO move VALUES\n'
-        s += ',\n'.join(f'\t({gameid},{moveno}, {movex},{movey})'
+        s += ', '.join(f'({gameid},{moveno}, {movex},{movey})'
                         for moveno, (movex, movey) in enumerate(moves[-1])) + ';\n'
     #for moveno, (movex, movey) in enumerate(moves[-1]):
     #    s += f'\t({gameid},{moveno}, {movex},{movey});\n'
@@ -87,25 +84,32 @@ for gameid, game in enumerate(soup.find_all('div', {"class": "player_block cbloc
 
 print(open('weiqi.sql', 'r').read() + '\n\n')
 print('''
-INSERT INTO country VALUES ("China","images/cn.png");
-INSERT INTO country VALUES ("Japan","images/jp.png");
-INSERT INTO country VALUES ("Korea","images/kr.png");
+INSERT INTO country VALUES ("China","images/cn.png", "The earliest written reference to the game is generally recognized as the historical annal Zuo Zhuan (c. 4th century BCE), referring to a historical event of 548 BCE. It is also mentioned in Book XVII of the Analects of Confucius and in two books written by Mencius (c. 3rd century BCE). In all of these works, the game is referred to as yì (弈). Today, in China, it is known as weiqi (simplified Chinese: 围棋; traditional Chinese: 圍棋; pinyin: wéiqí; Wade–Giles: wei ch'i), lit. 'encirclement board game'.
 
-insert into competition values ("World Amateur Champion Special Competition");
-insert into competition values ("Chinese Agon Cup");
-insert into event values ("Chinese Agon Cup", 8);
-insert into event values ("Chinese Agon Cup", 9);
-insert into event values ("Chinese Agon Cup", 10);
-insert into event values ("World Amateur Champion Special Competition", 0);
+
+A 19×19 Go board model from a Sui dynasty (581–618 CE) tomb.
+Go was originally played on a 17×17 line grid, but a 19×19 grid became standard by the time of the Tang Dynasty (618–907).");
+
+INSERT INTO country VALUES ("Japan","images/jp.png", "The game reached Japan in the 7th century CE—where it is called go (碁) or igo (囲碁). It became popular at the Japanese imperial court in the 8th century, and among the general public by the 13th century. The game was further formalized in the 15th century. In 1603, Tokugawa Ieyasu re-established Japan's unified national government. In the same year, he assigned the then-best player in Japan, a Buddhist monk named Nikkai (né Kanō Yosaburo, 1559), to the post of Godokoro (Minister of Go).");
+INSERT INTO country VALUES ("Korea","images/kr.png", "In Korea, the game is called baduk (hangul: 바둑), and a variant of the game called Sunjang baduk was developed by the 16th century. Sunjang baduk became the main variant played in Korea until the end of the 19th century, when the current version was reintroduced from Japan.
+");
+
+insert into competition values ("World Amateur Champion Special Competition", 4, 10, "The World Amateur Go Championship (WAGC) is an event in which amateur players from around the world compete for the official world amateur title. The event is held every year, under the supervision of the International Go Federation. The first WAGC was held in 1979 with 30 participants from 14 countries.");
+insert into competition values ("Chinese Agon Cup", 5, 5, "The China-Japan Agon Cup is a tournament where the current Agon Cup/Ahan Tongshan Cup title holders from China and Japan play each other.");
+insert into event values ("Chinese Agon Cup", 8, "start of Liu Xing's 2-year reign", "");
+insert into event values ("Chinese Agon Cup", 9, "same winner and runner-up as last year.");
+insert into event values ("Chinese Agon Cup", 10, "Cho U a consistent runner-up");
+insert into event values ("World Amateur Champion Special Competition", 0, "This year, it remains more international than many of the other competitions.");
 insert into hosts values ("Chinese Agon Cup", "China");
 ''')
     
-    
+seed(0)
 for name, (country, ranking) in players.items():
     dob = random_date(start, end).date()
     print(f'INSERT INTO player VALUES ("{name}", {country}, "{ranking}", "{dob}", false, null, null, null);')
 print()
-    
+
+seed(0)
 ll = list(games.items())
 for gameid, (result, date, names,_ignore) in ll[:-5]:
     print(f'INSERT INTO game VALUES ({gameid}, "{result}", "{date}", "Chinese Agon Cup", {choice([8,9,10])}, "{names[0]}", "{names[1]}");')
@@ -115,8 +119,10 @@ print()
 
 print(s)
 
+seed(0)
 players = list(players.keys())
 gamesC = sample(range(len(games)), 10)
+
 
 cid = 0
 for gameid in gamesC: 
@@ -130,6 +136,8 @@ for gameid in gamesC:
         cid += 1
 print()
 
+
+seed(0)
 cidC = cid
 for cid in sample(range(cidC), 5):
     for player in sample(players, 5):
@@ -137,6 +145,7 @@ for cid in sample(range(cidC), 5):
 print()        
 
 
+seed(0)
 for cid in sample(range(cidC), 5):
     for player in sample(players, 5):
         print(f'insert into Tags values ({player!r}, {cid});')   

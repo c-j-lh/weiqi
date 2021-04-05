@@ -95,7 +95,8 @@ create table Tags(
 
 
 
-INSERT INTO country VALUES ("China","images/cn.png");
+INSERT INTO country VALUES ("China","images/cn.png","a
+a");
 INSERT INTO country VALUES ("Japan","images/jp.png");
 INSERT INTO country VALUES ("Korea","images/kr.png");
 

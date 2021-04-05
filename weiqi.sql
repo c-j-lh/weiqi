@@ -5,6 +5,7 @@ use weiqi;
 create table Country(
 	name	varchar(100),
     flag	varchar(1000),  -- image url
+    history text,
 	primary key (name)
 );
 
@@ -23,14 +24,21 @@ create table Player(
 
 create table Competition(
 	compName varchar(100),
-    primary key(compName)
+    primary key(compName),
+    prestige tinyint,    -- from 1 to 10
+    dynamicity tinyint,  -- from 1 to 10
+    history	text
 );
 
 create table Event(
 	compName varchar(100),
     compIter int,
+    notes	 text,
+    ongoing	 bit,
+    -- champion varchar(100),
     primary key(compName, compIter),
     foreign key(compName) references Competition(compName)
+    -- foreign key(champion) references Player(name)
 );
 
 create table Game(
