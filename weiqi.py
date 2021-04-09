@@ -93,7 +93,7 @@ def register():
             msg = 'Please fill out the form!'
         else:
             # Account doesnt exists and the form data is valid, now insert new account into accounts table
-            cursor.execute('INSERT INTO player VALUES (%s, %s, %s, false, NULL, NULL, NULL)', (name, ranking, password, ))
+            cursor.execute('INSERT INTO player VALUES (%s, null, %s, %s, false, NULL, NULL, NULL)', (name, ranking, password, ))
             mysql.connection.commit()
             msg = 'You have successfully registered!'
     elif request.method == 'POST':

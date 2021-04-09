@@ -1,107 +1,3 @@
-drop database if exists weiqi;
-create database weiqi;
-use weiqi;
-
-create table Country(
-	name	varchar(100),
-    flag	varchar(1000),  -- image url
-    history text,
-	primary key (name)
-);
-
-create table Player(
-  name         varchar(100) not null,
-  countryName  varchar(100) null,
-  ranking      varchar(5),
-  DOB          date,
-  AIFlag	   bit not null,
-  version	   decimal(10,2),
-  info         text,
-  algoType     varchar(100),
-  foreign key(countryName) references Country(name),
-  primary key (name)
-);
-
-create table Competition(
-	compName varchar(100),
-    primary key(compName),
-    prestige tinyint,    -- from 1 to 10
-    dynamicity tinyint,  -- from 1 to 10
-    history	text
-);
-
-create table Event(
-	compName varchar(100),
-    compIter int,
-    notes	 text,
-    ongoing	 bit,
-    -- champion varchar(100),
-    primary key(compName, compIter),
-    foreign key(compName) references Competition(compName)
-    -- foreign key(champion) references Player(name)
-);
-
-create table Game(
-	id	int,
-	result	varchar(10),
-	startDate date,
-	compName varchar(100),
-	compIter int,
-	playerNameBlack varchar(100) not null,
-	playerNameWhite varchar(100) not null,
-	primary key(id),
-	foreign key(playerNameBlack) references Player(name),
-	foreign key(playerNameWhite) references Player(name),
-	foreign key(compName, compIter) references Event(compName, compIter)
-);
-create table Hosts(
-	compName varchar(100),
-    countryName varchar(100),
-	foreign key(compName) references Competition(compName),
-	foreign key(countryName) references Country(name)
-);
-
-create table Move(
-	gameID int,
-    moveNo int,
-    positionX int, positionY int,
-    primary key(gameID, moveNo),
-    foreign key(gameID) references Game(id)
-);
-
-create table Comment(
-	id int,
-    text_ text,
-    voteCount int,
-    playerNameTyped varchar(100),
-    gameIDAbout int,
-    moveNoAbout int,
-    primary key(id),
-    foreign key(playerNameTyped) references Player(name),
-    foreign key(gameIDAbout, moveNoAbout) references Move(gameID, moveNo)
-);
-
-create table Votes(
-	playerName varchar(100),
-	commentID int,
-    downUp boolean,  -- False for down, True for up
-    primary key(playerName, commentID),
-    foreign key(playerName) references Player(name),
-    foreign key(commentID) references Comment(ID)
-);
-
-create table Tags(
-	playerName varchar(100),
-	commentID int,
-    primary key(playerName, commentID),
-    foreign key(playerName) references Player(name),
-    foreign key(commentID) references Comment(ID)
-);
-
-
-
-
-
 INSERT INTO country VALUES ("China","images/cn.png", "The earliest written reference to the game is generally recognized as the historical annal Zuo Zhuan (c. 4th century BCE), referring to a historical event of 548 BCE. It is also mentioned in Book XVII of the Analects of Confucius and in two books written by Mencius (c. 3rd century BCE). In all of these works, the game is referred to as yì (弈). Today, in China, it is known as weiqi (simplified Chinese: 围棋; traditional Chinese: 圍棋; pinyin: wéiqí; Wade–Giles: wei ch'i), lit. 'encirclement board game'.
 
 
@@ -136,24 +32,24 @@ INSERT INTO player VALUES ("Zhao Chenyu", null, "8p", "1972-06-06", false, null,
 INSERT INTO player VALUES ("Xu Jiayang", null, "8p", "1964-05-13", false, null, null, null);
 INSERT INTO player VALUES ("Tao Xinran", "China", "8p", "1979-09-13", false, null, null, null);
 
-INSERT INTO game VALUES (0, "B+R", "2021-02-25", "Chinese Agon Cup", 9, "Shin Jinseo", "Ke Jie");
-INSERT INTO game VALUES (1, "B+R", "2021-02-24", "Chinese Agon Cup", 9, "Shin Jinseo", "Ichiriki Ryo");
-INSERT INTO game VALUES (2, "B+R", "2021-02-23", "Chinese Agon Cup", 8, "Shin Jinseo", "Yang Dingxin");
-INSERT INTO game VALUES (3, "W+R", "2021-02-22", "Chinese Agon Cup", 9, "Iyama Yuuta", "Shin Jinseo");
+INSERT INTO game VALUES (0, "B+R", "2021-02-25", "Chinese Agon Cup", 9, "AlphaaGo", "Ke Jie");
+INSERT INTO game VALUES (1, "B+R", "2021-02-24", "Chinese Agon Cup", 9, "AlphaaGo", "Ichiriki Ryo");
+INSERT INTO game VALUES (2, "B+R", "2021-02-23", "Chinese Agon Cup", 8, "AlphaaGo", "Yang Dingxin");
+INSERT INTO game VALUES (3, "W+R", "2021-02-22", "Chinese Agon Cup", 9, "Iyama Yuuta", "AlphaaGo");
 INSERT INTO game VALUES (4, "W+R", "2021-02-03", "Chinese Agon Cup", 10, "Ke Jie", "Shin Minjun");
 INSERT INTO game VALUES (5, "W+R", "2021-02-01", "Chinese Agon Cup", 9, "Shin Minjun", "Ke Jie");
 INSERT INTO game VALUES (6, "W+R", "2021-01-20", "Chinese Agon Cup", 9, "Ke Jie", "Tang Weixing");
 INSERT INTO game VALUES (7, "W+R", "2021-01-20", "Chinese Agon Cup", 9, "Ke Jie", "Tang Weixing");
-INSERT INTO game VALUES (8, "B+R", "2021-01-20", "Chinese Agon Cup", 9, "Shin Jinseo", "Lian Xiao");
-INSERT INTO game VALUES (9, "W+R", "2021-01-18", "Chinese Agon Cup", 9, "Fan Tingyu", "Shin Jinseo");
+INSERT INTO game VALUES (8, "B+R", "2021-01-20", "Chinese Agon Cup", 9, "AlphaaGo", "Lian Xiao");
+INSERT INTO game VALUES (9, "W+R", "2021-01-18", "Chinese Agon Cup", 9, "Fan Tingyu", "AlphaaGo");
 INSERT INTO game VALUES (10, "B+R", "2021-01-18", "Chinese Agon Cup", 10, "Lian Xiao", "Byun Sangil");
-INSERT INTO game VALUES (11, "W+R", "2021-01-18", "Chinese Agon Cup", 8, "Fan Tingyu", "Shin Jinseo");
+INSERT INTO game VALUES (11, "W+R", "2021-01-18", "Chinese Agon Cup", 8, "Fan Tingyu", "AlphaaGo");
 INSERT INTO game VALUES (12, "W+R", "2021-01-18", "Chinese Agon Cup", 10, "Park Yeonghun", "Tang Weixing");
-INSERT INTO game VALUES (13, "B+3.5", "2021-01-12", "Chinese Agon Cup", 8, "Xie Ke", "Ichiriki Ryo");
-INSERT INTO game VALUES (14, "B+3.5", "2021-01-12", "Chinese Agon Cup", 9, "Xie Ke", "Ichiriki Ryo");
-INSERT INTO game VALUES (15, "B+R", "2021-01-10", "World Amateur Champion Special Competition", 0, "Shin Jinseo", "Zhao Chenyu");
-INSERT INTO game VALUES (16, "B+R", "2021-01-10", "World Amateur Champion Special Competition", 0, "Shin Jinseo", "Zhao Chenyu");
-INSERT INTO game VALUES (17, "B+R", "2021-01-10", "World Amateur Champion Special Competition", 0, "Shin Jinseo", "Zhao Chenyu");
+INSERT INTO game VALUES (13, "B+3.5", "2021-01-12", "Chinese Agon Cup", 8, "AlphaaGo Zero", "Ichiriki Ryo");
+INSERT INTO game VALUES (14, "B+3.5", "2021-01-12", "Chinese Agon Cup", 9, "AlphaaGo Zero", "Ichiriki Ryo");
+INSERT INTO game VALUES (15, "B+R", "2021-01-10", "World Amateur Champion Special Competition", 0, "AlphaaGo", "Zhao Chenyu");
+INSERT INTO game VALUES (16, "B+R", "2021-01-10", "World Amateur Champion Special Competition", 0, "AlphaaGo", "Zhao Chenyu");
+INSERT INTO game VALUES (17, "B+R", "2021-01-10", "World Amateur Champion Special Competition", 0, "AlphaaGo", "Zhao Chenyu");
 INSERT INTO game VALUES (18, "W+R", "2021-01-08", "World Amateur Champion Special Competition", 0, "Yang Dingxin", "Xu Jiayang");
 INSERT INTO game VALUES (19, "W+0.5", "2021-01-06", "World Amateur Champion Special Competition", 0, "Tao Xinran", "Yang Dingxin");
 
@@ -224,14 +120,14 @@ insert into comment values (24, "Good move", 0, 'Lian Xiao', 19, 104);
 insert into comment values (25, "Good move", 0, 'Xu Jiayang', 19, 104);
 insert into comment values (26, "Good move", 0, 'Lian Xiao', 19, 244);
 insert into comment values (27, "Good move", 0, 'Xu Jiayang', 19, 244);
-insert into comment values (28, "Good move", 0, 'Shin Jinseo', 4, 133);
+insert into comment values (28, "Good move", 0, 'AlphaaGo', 4, 133);
 insert into comment values (29, "Good move", 0, 'Zhao Chenyu', 4, 133);
-insert into comment values (30, "Good move", 0, 'Shin Jinseo', 4, 66);
+insert into comment values (30, "Good move", 0, 'AlphaaGo', 4, 66);
 insert into comment values (31, "Good move", 0, 'Zhao Chenyu', 4, 66);
 insert into comment values (32, "Good move", 0, 'Ke Jie', 7, 140);
-insert into comment values (33, "Good move", 0, 'Xie Ke', 7, 140);
+insert into comment values (33, "Good move", 0, 'AlphaaGo Zero', 7, 140);
 insert into comment values (34, "Good move", 0, 'Ke Jie', 7, 3);
-insert into comment values (35, "Good move", 0, 'Xie Ke', 7, 3);
+insert into comment values (35, "Good move", 0, 'AlphaaGo Zero', 7, 3);
 insert into comment values (36, "Good move", 0, 'Xu Jiayang', 5, 102);
 insert into comment values (37, "Good move", 0, 'Zhao Chenyu', 5, 102);
 insert into comment values (38, "Good move", 0, 'Xu Jiayang', 5, 181);
@@ -251,7 +147,7 @@ insert into Votes values ('Byun Sangil', 2, True);
 insert into Votes values ('Ichiriki Ryo', 2, True);
 insert into Votes values ('Iyama Yuuta', 2, True);
 insert into Votes values ('Ke Jie', 2, True);
-insert into Votes values ('Xie Ke', 2, True);
+insert into Votes values ('AlphaaGo Zero', 2, True);
 insert into Votes values ('Ke Jie', 16, True);
 insert into Votes values ('Shin Minjun', 16, False);
 insert into Votes values ('Tang Weixing', 16, True);
@@ -260,7 +156,7 @@ insert into Votes values ('Byun Sangil', 16, True);
 insert into Votes values ('Xu Jiayang', 32, False);
 insert into Votes values ('Fan Tingyu', 32, False);
 insert into Votes values ('Iyama Yuuta', 32, True);
-insert into Votes values ('Shin Jinseo', 32, True);
+insert into Votes values ('AlphaaGo', 32, True);
 insert into Votes values ('Tao Xinran', 32, True);
 
 insert into Tags values ('Lian Xiao', 24);
@@ -281,43 +177,10 @@ insert into Tags values ('Byun Sangil', 2);
 insert into Tags values ('Zhao Chenyu', 16);
 insert into Tags values ('Iyama Yuuta', 16);
 insert into Tags values ('Fan Tingyu', 16);
-insert into Tags values ('Xie Ke', 16);
+insert into Tags values ('AlphaaGo Zero', 16);
 insert into Tags values ('Byun Sangil', 16);
 insert into Tags values ('Tao Xinran', 32);
 insert into Tags values ('Ichiriki Ryo', 32);
 insert into Tags values ('Iyama Yuuta', 32);
 insert into Tags values ('Ke Jie', 32);
-insert into Tags values ('Xie Ke', 32);
-
-update comment
-set voteCount = (select count(*) from votes where commentID=id);
--- select * from comment;
-
-create trigger addVote
-after insert on votes
-for each row
-update comment
-set voteCount = voteCount + if(new.downUp, 1, -1)
-where new.commentID=id;
-
-create trigger subVote
-after delete on votes
-for each row
-update comment
-set voteCount = voteCount - if(old.downUp, 1, -1)
-where old.commentID=id;
-
-DELIMITER //
-create trigger changeVote
-after update on votes
-for each row
-BEGIN
-	update comment
-	set voteCount = voteCount - if(old.downUp, 1, -1)
-	where old.commentID=id;
-    
-	update comment
-	set voteCount = voteCount + if(new.downUp, 1, -1)
-	where new.commentID=id;
-END;//
-delimiter ;
+insert into Tags values ('AlphaaGo Zero', 32);
