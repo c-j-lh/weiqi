@@ -329,7 +329,7 @@ def joseki():
 select m1.gameid as "GameID", 
     m1.moveno, m1.positionX, m1.positionY,       
     m2.moveno, m2.positionX, m2.positionY
-from move m1, move m2, aa
+from move m1, move m2, iter
 where m1.gameid=m2.gameid and (m2.moveno-m1.moveno)%2=1 and m2.moveno<20 -- and m2.gameid=m3.gameid
 	and (not exists(
 		select moveno
