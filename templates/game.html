@@ -34,6 +34,9 @@ Result: {{ info.result }}
 <table>
 <tr>
 	<th></th>
+	<th></th>
+	<th></th>
+	<th></th>
 	<th>Move Number</th>
 	<th>Player</th>
 	<th>Move</th>
@@ -41,8 +44,24 @@ Result: {{ info.result }}
 {% for item in comments %}
 <tr>
     <td>
-		<i class="fa fa-angle-{{'up' if item.voteCount>=0 else 'down'}}"></i>  
-		{{-item.voteCount if item.voteCount<0 else item.voteCount}}
+		
+    
+		<a href="{{ url_for('_post_vote', gameid=info.id, commentid = item.id, action_vote = 1) }}">
+			<i class="fas fa-angle-up"></i>
+		</a>
+	</td>
+	<td>
+			
+		{{item.voteCount}}
+	
+	</td>
+	<td>	
+    <a href="{{ url_for('_post_vote', gameid=info.id, commentid = item.id, action_vote = 0) }}">
+        <i class="fas fa-angle-down"></i>
+    </a>
+	
+	</td>
+	<td>
 	</td>
 	<td>{{item.moveNoAbout}}</td>
     <td>{{item.playerNameTyped}}: </td>
@@ -52,6 +71,12 @@ Result: {{ info.result }}
 </table>
 
 {% endblock %}
+
 <!--
+<i class="fa fa-angle-{{'up' if item.voteCount>=0 else 'down'}}"></i> 
+<i class="fa fa-angle-up"></i> 
+		</input> 
+		
+				<input type="button" name="aa" value="v" onclick="f()">   
 
 -->

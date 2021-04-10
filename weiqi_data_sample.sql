@@ -76,23 +76,42 @@ where playerName="Ke Jie" and commentID=2;
 select * from comment;
 */
 
-select m1.gameid
-from move m1, move m2 -- , move m3
-where m1.gameid=m2.gameid and (m2.moveno-m1.moveno)%2=1 -- and m2.gameid=m3.gameid
+drop table if exists iter;
+create table iter(xbase int, xneg int, ybase int, yneg int);
+insert into iter values (0,1,0,1), (0,1,20,-1), (20,-1,0,1), (20,-1,20,-1);
+select * from aa;
+
+select m1.gameid as "GameID", 
+    m1.moveno, m1.positionX, m1.positionY,       
+    m2.moveno, m2.positionX, m2.positionY
+from move m1, move m2, iter -- , move m3
+where m1.gameid=m2.gameid and (m2.moveno-m1.moveno)%2=1 and m2.moveno<20 -- and m2.gameid=m3.gameid
+	and (not exists(
+		select moveno
+        from move m3 
+        where m3.gameid=m1.gameid and m3.moveno<m1.moveno
+			and xbase+xneg*m3.positionX<=4 and ybase+yneg*m3.positionY<=4
+    ))
+    and (
+		(m1.positionx=xbase+xneg*3 and m1.positiony=ybase+yneg*4 and m2.positionx=xbase+xneg*5 and m2.positiony=ybase+yneg*3)
+        or (m1.positionx=xbase+xneg*4 and m1.positiony=ybase+yneg*3 and m2.positionx=xbase+xneg*3 and m2.positiony=ybase+yneg*5)
+	);
+
+-- BACKUP!!!!!!!!!!!!!!!!!!!!!!
+select distinct m1.gameid
+from move m1, move m2, aa -- , move m3
+where m1.gameid=m2.gameid and (m2.moveno-m1.moveno)%2=1 and m2.moveno<20 -- and m2.gameid=m3.gameid
 	and (
 		(m1.positionx=3 and m1.positiony=4 and m2.positionx=5 and m2.positiony=3)
-        or (m1.moveno+1=m2.moveno and m1.positionx=17 and m1.positiony=4 and m2.positionx=15 and m2.positiony=3)
-        or (m1.moveno+1=m2.moveno and m1.positionx=3 and m1.positiony=16 and m2.positionx=5 and m2.positiony=17)
-        or (m1.moveno+1=m2.moveno and m1.positionx=17 and m1.positiony=16 and m2.positionx=15 and m2.positiony=17)
+        or (m1.positionx=17 and m1.positiony=4 and m2.positionx=15 and m2.positiony=3)
+        or (m1.positionx=3 and m1.positiony=16 and m2.positionx=5 and m2.positiony=17)
+        or (m1.positionx=17 and m1.positiony=16 and m2.positionx=15 and m2.positiony=17)
 		
-        or (m1.moveno+1=m2.moveno and m1.positionx=4 and m1.positiony=3 and m2.positionx=3 and m2.positiony=5)
-        or (m1.moveno+1=m2.moveno and m1.positionx=4 and m1.positiony=17 and m2.positionx=3 and m2.positiony=15)
-        or (m1.moveno+1=m2.moveno and m1.positionx=16 and m1.positiony=3 and m2.positionx=17 and m2.positiony=5)
-        or (m1.moveno+1=m2.moveno and m1.positionx=16 and m1.positiony=17 and m2.positionx=17 and m2.positiony=15)
+        or (m1.positionx=4 and m1.positiony=3 and m2.positionx=3 and m2.positiony=5)
+        or (m1.positionx=4 and m1.positiony=17 and m2.positionx=3 and m2.positiony=15)
+        or (m1.positionx=16 and m1.positiony=3 and m2.positionx=17 and m2.positiony=5)
+        or (m1.positionx=16 and m1.positiony=17 and m2.positionx=17 and m2.positiony=15)
 	);
-select (2--3)%2;    
-select * from move
-where gameid=13;
     
 select * from player limit 1;
 use weiqi;

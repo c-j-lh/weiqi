@@ -98,7 +98,9 @@ create table Tags(
     foreign key(commentID) references Comment(ID)
 );
 
-
+DROP table if exists iter;
+CREATE table iter(xbase int, xneg int, ybase int, yneg int);
+INSERT into iter values (0,1,0,1), (0,1,20,-1), (20,-1,0,1), (20,-1,20,-1);
 
 
 

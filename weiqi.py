@@ -226,10 +226,12 @@ def event(compname, compiter):
     #return f'Hello, {s}!' 
 
 
-@app.route('/pythonlogin/game/<gameid>')
+@app.route('/pythonlogin/game/<gameid>', methods=['GET', 'POST'])
 def game(gameid):
     # Check if user is loggedin
+    
     if 'loggedin' in session:
+    
         # We need all the account info for the user so we can display it on the profile page
         info = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
         info.execute('SELECT G.*, P1.countryName as blackFlag, P2.countryName as whiteFlag FROM game G, player P1, player P2 WHERE id=%s and G.playerNameBlack=P1.name and G.playerNameWhite=P2.name', (gameid,))
@@ -246,6 +248,17 @@ def game(gameid):
         comments = comments.fetchall()
         print('comments', comments)
         
+        print('\n\n\n\naaa', request.method, 'method\n\n\n')
+        if request.method == 'POST':
+            passint:post_id
+            '''print(request.form['submit_button'])
+            if request.form['submit_button'] == 'Do Something':
+                pass # do something
+            elif request.form['submit_button'] == 'Do Something Else':
+                pass # do something else
+            else:
+                pass # unknown'''
+        
         return render_template('game.html',
         moves=moves,
         comments=comments,
@@ -253,7 +266,24 @@ def game(gameid):
     # User is not loggedin redirect to login page
     return redirect(url_for('login'))
     #return f'Hello, {s}!'
-   
+
+@app.route('/pythonlogin/game/<gameid>/<commentid>/<action_vote>', methods=['GET'])
+def _post_vote(gameid, commentid, action_vote):
+    print(commentid, action_vote, 'bbbbbbbbbbb\n\n\n')
+    
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    print('INSERT INTO Votes VALUES (%s, %s, %s)'.format(session['name'], commentid, ('False', 'True')[int(action_vote)],))
+    try:
+        cursor.execute(f"INSERT INTO Votes VALUES (%s, %s, {('False', 'True')[int(action_vote)]})", (session['name'], commentid,))
+    except:
+        print(f"UPDATE Votes WHERE playername=%s and commentID=%s SET downUp={('False', 'True')[int(action_vote)]}" % (session['name'], commentid,))
+        
+        cursor.execute(f"UPDATE Votes SET downUp={('False', 'True')[int(action_vote)]} WHERE playername=%s and commentID=%s ", (session['name'], commentid,))
+    mysql.connection.commit()
+    msg = 'You have successfully registered!'
+    
+    return game(12)
+
 fstr = '''select m1.gameid
 from move m1, move m2 -- , move m3
 where m1.gameid=m2.gameid and m1.moveno < m2.moveno -- and m2.gameid=m3.gameid
@@ -277,13 +307,13 @@ def imageFor(country):
     print(games.flag)
     return url_for('static', filename='cn.png')
     
-@app.route('/pythonlogin/joseki/')   
+@app.route('/pythonlogin/joseki/', methods=['GET', 'POST'])   
 def joseki():
     # Output message if something goes wrong...
     msg = ''
     # Check if "name", "password" and "ranking" POST requests exist (user submitted form)
     games = []
-    if request.method == 'POST' and 'name' in request.form and 'password' in request.form and 'ranking' in request.form:
+    if request.method == 'POST' and 'coords' in request.form:
         # Create variables for easy access
         coords = request.form['coords']
         
@@ -294,10 +324,29 @@ def joseki():
             assert len(coords)==4  # %2 == 0
             
             games = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-            games.execute('SELECT * FROM games WHERE id = %s', (1,))
+            x1, y1, x2, y2 = coords[:4]
+            games.execute(f'''
+select m1.gameid as "GameID", 
+    m1.moveno, m1.positionX, m1.positionY,       
+    m2.moveno, m2.positionX, m2.positionY
+from move m1, move m2, aa
+where m1.gameid=m2.gameid and (m2.moveno-m1.moveno)%2=1 and m2.moveno<20 -- and m2.gameid=m3.gameid
+	and (not exists(
+		select moveno
+        from move m3 
+        where m3.gameid=m1.gameid and m3.moveno<m1.moveno
+			and xbase+xneg*m3.positionX<=4 and ybase+yneg*m3.positionY<=4
+    ))
+    and (
+		(m1.positionx=xbase+xneg*{x1} and m1.positiony=ybase+yneg*{y1} and m2.positionx=xbase+xneg*{x2} and m2.positiony=ybase+yneg*{y2})
+        or (m1.positionx=xbase+xneg*{y1} and m1.positiony=ybase+yneg*{x1} and m2.positionx=xbase+xneg*{y2} and m2.positiony=ybase+yneg*{x2})
+	);
+''')
             games = games.fetchall()
+            print(games)
             msg = 'result'
         except:
+            print('\n\n\nfailed\n\n\n')
             msg = 'Please enter pairs of coordinates'
     elif request.method == 'POST':
         # Form is empty... (no POST data)
