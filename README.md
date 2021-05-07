@@ -2,7 +2,8 @@
 Weiqi MySQL database/website created for CS6131. Refer to [ProjectFinalReportChieuLeHeng.ipynb](ProjectFinalReportChieuLeHeng.ipynb) for the report
 
 ## Setup instructions
-<Install MySQL Community Server>
+Install MySQL Community Server
+
 ```
 pip3 install ipython-sql mysql-client flask_mysqldb
 ```
